@@ -18,6 +18,11 @@ import About from './pages/About';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 
+//cart
+import Cart from './pages/Cart/Cart';
+import PaymentPage from './pages/Cart/PaymentPage';
+import Card from './pages/Cart/Card';
+
 
 function App() {
   
@@ -43,6 +48,10 @@ function App() {
     <Route path='/product/:id' element={<ProductPage/>}/>
     <Route path='/about' element={<About/>}/>
     <Route path='*' element={<ErrorPage/>}/>
+
+    <Route path="/cart" element={<Cart />} />
+    <Route path="/checkout" element={<PaymentPage />} />
+    <Route path="/card" element={<Card />} />
 
     </Routes>
     <Footer/>
