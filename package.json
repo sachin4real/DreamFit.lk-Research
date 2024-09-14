@@ -1,25 +1,22 @@
 {
-  "name": "virtualdressingroom",
+  "name": "dreamfit.lk-research",
   "version": "1.0.0",
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon api/index.js",
+     "dev": "nodemon api/index.js",
     "start": "node api/index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Sachin",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mongoose": "^8.5.2",
-    "multer": "^1.4.5-lts.1",
-    "nodemon": "^3.1.4",
-    "path": "^0.12.7",
-    "react-router-dom": "^6.26.1",
-    "url": "^0.11.4"
+    "nodemon": "^3.1.4"
   }
+
+
 }
