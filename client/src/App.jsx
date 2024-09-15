@@ -17,6 +17,7 @@ import Collection from './pages/Collection';
 import About from './pages/About';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
+import SearchPage from './pages/SearchPage';
 
 //cart
 import Cart from './pages/Cart/Cart';
@@ -33,6 +34,7 @@ function App() {
     <Header/>
     <Routes>
     <Route path='/' element={<Home/>}/>
+    <Route path='/search' element={<SearchPage/>}/>
     <Route path='/sign-in' element={<SignIn/>}/>
     <Route path='/sign-up' element={<SignUp/>}/>
     <Route path='/collection' element={<Collection/>}/>
