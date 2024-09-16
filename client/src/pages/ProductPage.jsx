@@ -3,16 +3,81 @@ import { Link, useParams } from 'react-router-dom';
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import products from '../data/products';
 
-
-
 const ProductPage = () => {
   const { id } = useParams();
   const product = products.find((product) => product.id === parseInt(id));
   const [selectedImage, setSelectedImage] = useState(product.images[0]);
+  const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
+  const [quantity, setQuantity] = useState(1);
 
   if (!product) {
     return <div>Product not found</div>;
   }
+
+  const addToCart = async () => {
+    const cartItem = {
+      ItemID: product.id,
+      ItemName: product.name,
+      Quantity: quantity,
+      ItemPrice: product.price,
+      imageUrl: selectedImage,
+      Size: selectedSize,
+    };
+
+    try {
+      // Fetch current cart items
+      const response = await fetch('http://localhost:3000/cart');
+      const cartItems = await response.json();
+
+      // Check if item with the same ID and size exists
+      const existingItem = cartItems.find(
+        (item) => item.ItemID === cartItem.ItemID && item.Size === cartItem.Size
+      );
+
+      if (existingItem) {
+        // Update the quantity of the existing item by adding the new quantity
+        const updatedQuantity = existingItem.Quantity + 1; // Increment by 1 for the same item
+
+        const updateResponse = await fetch(`http://localhost:3000/cart/${existingItem._id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            Quantity: updatedQuantity,
+          }),
+        });
+
+        if (updateResponse.ok) {
+          alert(`${product.name} (${selectedSize}) quantity has been updated in your cart.`);
+        } else {
+          const error = await updateResponse.json();
+          console.error('Error updating quantity:', error);
+          alert('Failed to update item quantity in cart.');
+        }
+      } else {
+        // Add new item to cart
+        const addResponse = await fetch('http://localhost:3000/cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(cartItem),
+        });
+
+        if (addResponse.ok) {
+          alert(`${product.name} (${selectedSize}) has been added to your cart.`);
+        } else {
+          const error = await addResponse.json();
+          console.error('Error adding to cart:', error);
+          alert('Failed to add item to cart.');
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('An error occurred while adding the item to the cart.');
+    }
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -43,7 +108,11 @@ const ProductPage = () => {
           <p className="text-2xl text-gray-800 mb-4">Rs {product.price}.00</p>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">Style Size:</label>
-            <select className="block w-40 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+            <select 
+              className="block w-40 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+              value={selectedSize}
+              onChange={(e) => setSelectedSize(e.target.value)}
+            >
               {product.sizeOptions.map((size) => (
                 <option key={size} value={size}>
                   {size}
@@ -53,11 +122,13 @@ const ProductPage = () => {
           </div>
 
           <div className="flex space-x-4 mb-4">
-            <button className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">Add to cart</button>
+            <button 
+              onClick={addToCart}
+              className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">
+              Add to cart
+            </button>
             <button className="px-4 py-2 bg-gray-200 rounded-lg text-gray-800">Add to Wishlist</button>
           </div>
-
-          
 
           <div className="flex items-center space-x-2 mb-4">
             <span className="text-sm font-medium text-gray-600">Share:</span>
@@ -66,13 +137,12 @@ const ProductPage = () => {
           </div>
 
           <div className="flex space-x-4 mb-4">
-          <Link to={product.customizeLink} className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">Customize</Link>
+            <Link to={product.customizeLink} className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">Customize</Link>
           </div>
-
         </div>
       </div>
 
-      <div className="mt-16 ml-10  ">
+      <div className="mt-16 ml-10">
         <h2 className="text-xl font-semibold mb-2">Product Information</h2>
         <div className="border-t border-b py-4 text-sm text-gray-700">
           <p><strong>Chest:</strong> {product.details.chest}</p>
@@ -86,36 +156,6 @@ const ProductPage = () => {
           <p><strong>Model Size:</strong> {product.details.modelSize}</p>
           <p><strong>Wash & Care:</strong> {product.details.care}</p>
           <p className="text-xs text-gray-500 mt-2"><em>Note: {product.details.note}</em></p>
-        </div>
-      </div>
-
-      <div className="mt-8">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Related Products</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 justify-items-center">
-          {products.slice(1, 5).map((relatedProduct) => (
-            <div key={relatedProduct.id} className="border p-4 rounded-lg max-w-xs">
-              <div className="relative">
-                <img
-                  src={relatedProduct.images[0]}
-                  alt={relatedProduct.name}
-                  className="w-full h-56 object-contain rounded-lg mb-2"
-                />
-               <div>
-               {relatedProduct.inStock 
-                  ?<span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">In stock</span>
-                  :<span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">Out of stock</span>
-                }
-                </div>
-
-                
-              </div>
-              <h3 className="text-lg font-semibold">{relatedProduct.name}</h3>
-              <p className="text-gray-700">Rs {relatedProduct.price}.00</p>
-              <div className="mt-2">
-                <a href={relatedProduct.viewDetails} className="px-2 py-1 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">View Details</a>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </div>
