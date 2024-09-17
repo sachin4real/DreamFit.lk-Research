@@ -85,7 +85,7 @@ const Cart = () => {
   const cartTotal = cartSubtotal + shippingFee;
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 min-h-screen mt-5  ">
       <div className="p-4 bg-white rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-4 text-gray-800 tracking-wide uppercase">Your Cart</h2>
         {loading ? (
