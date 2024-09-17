@@ -36,7 +36,7 @@ const ProductPage = () => {
 
       if (existingItem) {
         // Update the quantity of the existing item by adding the new quantity
-        const updatedQuantity = existingItem.Quantity + 1; // Increment by 1 for the same item
+        const updatedQuantity = existingItem.Quantity + quantity; // Adjust quantity dynamically
 
         const updateResponse = await fetch(`http://localhost:3000/cart/${existingItem._id}`, {
           method: 'PATCH',
@@ -90,7 +90,9 @@ const ProductPage = () => {
                 src={img}
                 alt={`${product.name} ${index + 1}`}
                 onClick={() => setSelectedImage(img)}
-                className={`w-16 h-20 rounded-lg cursor-pointer border-2 ${selectedImage === img ? 'border-blue-500' : 'border-gray-200'}`}
+                className={`w-16 h-20 rounded-lg cursor-pointer border-2 ${
+                  selectedImage === img ? 'border-blue-500' : 'border-gray-200'
+                }`}
               />
             ))}
           </div>
@@ -108,7 +110,7 @@ const ProductPage = () => {
           <p className="text-2xl text-gray-800 mb-4">Rs {product.price}.00</p>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">Style Size:</label>
-            <select 
+            <select
               className="block w-40 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
               value={selectedSize}
               onChange={(e) => setSelectedSize(e.target.value)}
@@ -122,9 +124,10 @@ const ProductPage = () => {
           </div>
 
           <div className="flex space-x-4 mb-4">
-            <button 
+            <button
               onClick={addToCart}
-              className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">
+              className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white"
+            >
               Add to cart
             </button>
             <button className="px-4 py-2 bg-gray-200 rounded-lg text-gray-800">Add to Wishlist</button>
@@ -132,12 +135,18 @@ const ProductPage = () => {
 
           <div className="flex items-center space-x-2 mb-4">
             <span className="text-sm font-medium text-gray-600">Share:</span>
-            <button className="text-gray-600"><FaFacebook size={20} /></button>
-            <button className="text-gray-600"><FaWhatsapp size={20} /></button>
+            <button className="text-gray-600">
+              <FaFacebook size={20} />
+            </button>
+            <button className="text-gray-600">
+              <FaWhatsapp size={20} />
+            </button>
           </div>
 
           <div className="flex space-x-4 mb-4">
-            <Link to={product.customizeLink} className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">Customize</Link>
+            <Link to={product.customizeLink} className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">
+              Customize
+            </Link>
           </div>
         </div>
       </div>

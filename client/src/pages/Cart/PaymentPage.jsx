@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 const PaymentPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const cartTotal = location.state?.total || 0; // Default to 0 if no total passed
+  const cartTotal = location.state?.total || 0;
 
   const [deliveryInfo, setDeliveryInfo] = useState({
     firstName: '',
@@ -17,9 +17,11 @@ const PaymentPage = () => {
 
   const [summary, setSummary] = useState({
     subtotal: cartTotal,
-    deliveryFee: 200, // Example static shipping fee
-    total: parseFloat(cartTotal) + 200, // Example calculation including shipping fee
+    deliveryFee: 200,
+    total: parseFloat(cartTotal) + 200,
   });
+
+  const [paymentMethod, setPaymentMethod] = useState('');
 
   const handleChange = (e) => {
     setDeliveryInfo({
@@ -28,10 +30,15 @@ const PaymentPage = () => {
     });
   };
 
+  const handlePaymentMethodChange = (e) => {
+    setPaymentMethod(e.target.value);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const deliveryData = {
       ...deliveryInfo,
+      paymentMethod,
       subtotal: summary.subtotal,
       deliveryFee: summary.deliveryFee,
       total: summary.total,
@@ -148,12 +155,67 @@ const PaymentPage = () => {
                 <span>Rs{summary.total.toFixed(2)}</span>
               </div>
             </div>
-            <button
-  type="submit"
-  className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 shadow-lg shadow-cyan-500/50 text-white rounded-lg transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-100 duration-300">
-  Proceed to Payment
-</button>
 
+            {/* Payment Methods */}
+            <div className="border border-gray-300 rounded-md shadow-sm p-4">
+  <h3 className="text-lg font-semibold mb-4">Payment Method</h3>
+  <div className="flex items-center space-x-4">
+    {/* Visa Option */}
+    <label className="inline-flex items-center">
+      <input
+        type="radio"
+        value="visa"
+        name="paymentMethod"
+        checked={paymentMethod === 'visa'}
+        onChange={handlePaymentMethodChange}
+        className="form-radio text-green-500"
+      />
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg"
+        alt="Visa"
+        className="ml-2 h-6"
+      />
+    </label>
+
+    {/* Mastercard Option */}
+    <label className="inline-flex items-center">
+      <input
+        type="radio"
+        value="mastercard"
+        name="paymentMethod"
+        checked={paymentMethod === 'mastercard'}
+        onChange={handlePaymentMethodChange}
+        className="form-radio text-green-500"
+      />
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/b/b7/MasterCard_Logo.svg"
+        alt="Mastercard"
+        className="ml-2 h-6"
+      />
+    </label>
+
+    {/* Cash on Delivery Option */}
+    <label className="inline-flex items-center">
+      <input
+        type="radio"
+        value="cashOnDelivery"
+        name="paymentMethod"
+        checked={paymentMethod === 'cashOnDelivery'}
+        onChange={handlePaymentMethodChange}
+        className="form-radio text-green-500"
+      />
+      <span className="ml-2 font-semibold">Cash on Delivery</span>
+    </label>
+  </div>
+</div>
+
+
+            <button
+              type="submit"
+              className="w-full px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 shadow-lg shadow-cyan-500/50 text-white rounded-lg transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-100 duration-300"
+            >
+              Place Order
+            </button>
           </div>
         </form>
       </div>

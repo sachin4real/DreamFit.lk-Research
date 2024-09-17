@@ -12,7 +12,6 @@ const Cart = () => {
         const response = await fetch('http://localhost:3000/cart');
         if (response.ok) {
           const cart = await response.json();
-          console.log('Fetched cart items:', cart);
           setCartItems(cart);
         } else {
           console.error('Failed to load cart items');
@@ -28,6 +27,12 @@ const Cart = () => {
   }, []);
 
   const updateQuantity = async (id, newQuantity) => {
+    if (newQuantity < 1) {
+      // Optionally remove the item if quantity is set to less than 1
+      removeItem(id);
+      return;
+    }
+
     try {
       const response = await fetch(`http://localhost:3000/cart/${id}`, {
         method: 'PATCH',
@@ -64,7 +69,10 @@ const Cart = () => {
   };
 
   const handleCheckout = () => {
-    const cartTotal = cartItems.reduce((total, item) => total + item.ItemPrice * item.Quantity, 0).toFixed(2);
+    const cartTotal = cartItems.reduce(
+      (total, item) => total + item.ItemPrice * item.Quantity,
+      0
+    ).toFixed(2);
 
     const cartDetails = cartItems.map((item) => ({
       itemName: item.ItemName,
@@ -81,11 +89,11 @@ const Cart = () => {
   };
 
   const cartSubtotal = cartItems.reduce((total, item) => total + item.ItemPrice * item.Quantity, 0);
-  const shippingFee = 200.00;
+  const shippingFee = 200.0;
   const cartTotal = cartSubtotal + shippingFee;
 
   return (
-    <div className="container mx-auto p-4 min-h-screen mt-5  ">
+    <div className="container mx-auto p-4 min-h-screen mt-5">
       <div className="p-4 bg-white rounded-lg shadow-md">
         <h2 className="text-2xl font-bold mb-4 text-gray-800 tracking-wide uppercase">Your Cart</h2>
         {loading ? (

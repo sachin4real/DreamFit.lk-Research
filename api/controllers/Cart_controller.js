@@ -10,16 +10,26 @@ export const createCartItem = async (req, res) => {
     }
 
     try {
-        // Generate a unique OrderID
-        const OrderID = uuidv4();
+        // Check if an item with the same ItemID and Size already exists in the cart
+        const existingItem = await Cart.findOne({ ItemID, Size });
 
-        const cartItem = await Cart.create({ OrderID, ItemID, ItemName, Quantity, ItemPrice, imageUrl, Size });
-        res.status(200).json(cartItem);
+        if (existingItem) {
+            // If the item exists, update the quantity by adding the new quantity
+            existingItem.Quantity += Quantity;
+            const updatedItem = await existingItem.save();
+            return res.status(200).json(updatedItem); // Return the updated item
+        } else {
+            // If the item does not exist, create a new cart item
+            const OrderID = uuidv4(); // Generate a unique OrderID
+            const cartItem = await Cart.create({ OrderID, ItemID, ItemName, Quantity, ItemPrice, imageUrl, Size });
+            return res.status(201).json(cartItem); // Return the newly created item
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Server Error' });
     }
 };
+
 
 export const getAllCartItems = async (req, res) => {
     try {
