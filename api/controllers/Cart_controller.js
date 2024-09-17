@@ -1,15 +1,19 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
+import { v4 as uuidv4 } from 'uuid'; // Import uuid library
 import Cart from '../models/Cart_model.js';
 
 export const createCartItem = async (req, res) => {
-    const { OrderID, ItemID, ItemName, Quantity, ItemPrice, imageUrl } = req.body;
+    const { ItemID, ItemName, Quantity, ItemPrice, imageUrl, Size } = req.body;
 
     if (isNaN(ItemPrice)) {
         return res.status(400).json({ error: 'Invalid Item Price' });
     }
 
     try {
-        const cartItem = await Cart.create({ OrderID, ItemID, ItemName, Quantity, ItemPrice, imageUrl });
+        // Generate a unique OrderID
+        const OrderID = uuidv4();
+
+        const cartItem = await Cart.create({ OrderID, ItemID, ItemName, Quantity, ItemPrice, imageUrl, Size });
         res.status(200).json(cartItem);
     } catch (error) {
         console.error(error);
@@ -48,16 +52,24 @@ export const getCartItemById = async (req, res) => {
     }
 };
 
+// Cart_controller.js
+
+// Define and export the function
 export const updateCartItem = async (req, res) => {
     const { id } = req.params;
-    const { OrderID, ItemID, ItemName, Quantity, ItemPrice, imageUrl } = req.body;
+    const { Quantity } = req.body; // Only destructure Quantity from the request body
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: 'Invalid ID Format' });
     }
 
     try {
-        const updatedCartItem = await Cart.findByIdAndUpdate(id, { OrderID, ItemID, ItemName, Quantity, ItemPrice, imageUrl }, { new: true });
+        // Find the item and update its quantity
+        const updatedCartItem = await Cart.findByIdAndUpdate(
+            id,
+            { Quantity }, // Only update the Quantity field
+            { new: true }
+        );
 
         if (!updatedCartItem) {
             return res.status(404).json({ error: 'No such item' });
@@ -70,10 +82,10 @@ export const updateCartItem = async (req, res) => {
     }
 };
 
+
 export const deleteCartItem = async (req, res) => {
     const { id } = req.params;
 
-    // Validate the MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: 'Invalid ID Format' });
     }

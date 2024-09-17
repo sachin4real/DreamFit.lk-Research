@@ -24,6 +24,10 @@ const cartSchema = new mongoose.Schema({
     imageUrl: {
         type: String,
         required: true,
+    },
+    Size: {
+        type: String,
+        required: true,
     }
 }, { timestamps: true });
 
