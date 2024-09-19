@@ -1,0 +1,99 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  CardMedia,
+  Grid,
+  Button,
+  Rating,
+  IconButton,
+  Tooltip
+} from '@mui/material';
+import { Link } from 'react-router-dom';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+
+const AllProducts = () => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/products/all`);
+        setProducts(response.data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  return (
+    <Box sx={{ padding: 4, backgroundColor: '#f5f5f5' }}>
+      <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', marginBottom: 4 }}>
+        All Products
+      </Typography>
+      <Grid container spacing={3}>
+        {products.map((product) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={product._id}>
+            <Card
+              sx={{
+                boxShadow: 3,
+                transition: 'transform 0.3s ease-in-out',
+                '&:hover': { transform: 'scale(1.05)' },
+              }}
+            >
+              <CardMedia
+                component="img"
+                height="200"
+                image={product.images[0] ? `${import.meta.env.VITE_API_URL}${product.images[0]}` : '/placeholder.png'}
+                alt={product.name}
+              />
+              <CardContent>
+                <Typography variant="h6" component="div" gutterBottom>
+                  {product.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ height: 40, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {product.description}
+                </Typography>
+                <Typography variant="h6" color="primary" sx={{ marginTop: 1 }}>
+                  ${product.price.toFixed(2)}
+                </Typography>
+                <Rating name="read-only" value={product.rating || 4} readOnly size="small" sx={{ marginY: 1 }} />
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 2 }}>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    component={Link}
+                    to={`/product/${product._id}`}
+                    sx={{ textTransform: 'none' }}
+                  >
+                    View Details
+                  </Button>
+                  <Box>
+                    <Tooltip title="Add to Cart">
+                      <IconButton color="primary" size="small">
+                        <AddShoppingCartIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Add to Wishlist">
+                      <IconButton color="error" size="small">
+                        <FavoriteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
+};
+
+export default AllProducts;

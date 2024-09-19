@@ -35,7 +35,9 @@ app.use(express.urlencoded({ extended: true }));
 // Static folder for uploads
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.use('/uploads', express.static('uploads'));  // Serve images from the 'uploads' folder
+
 
 app.use('/cart', cartRoutes);
 app.use('/delivery', deliveryRoutes);
