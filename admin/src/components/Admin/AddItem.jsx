@@ -28,8 +28,8 @@ const AddItem = () => {
     }
   });
 
-  const [imageFiles, setImageFiles] = useState([]);
-  const [imagePreviews, setImagePreviews] = useState([]);
+  const [imageFiles, setImageFiles] = useState(new Array(5).fill(null)); // Array to hold 5 image files
+  const [imagePreviews, setImagePreviews] = useState(new Array(5).fill(null)); // Array to hold 5 image previews
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,23 +41,27 @@ const AddItem = () => {
     setFormData({ ...formData, details: { ...formData.details, [name]: value } });
   };
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length + imageFiles.length > 5) {
-      alert('You can upload a maximum of 5 images.');
-      return;
-    }
-    setImageFiles([...imageFiles, ...files]);
+  const handleImageChange = (e, index) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-    const previews = files.map((file) => URL.createObjectURL(file));
-    setImagePreviews([...imagePreviews, ...previews]);
+    // Update the file and preview for the specific image slot
+    const updatedFiles = [...imageFiles];
+    const updatedPreviews = [...imagePreviews];
+    updatedFiles[index] = file;
+    updatedPreviews[index] = URL.createObjectURL(file);
+
+    setImageFiles(updatedFiles);
+    setImagePreviews(updatedPreviews);
   };
 
   const handleImageRemove = (index) => {
-    const updatedImages = imageFiles.filter((_, i) => i !== index);
-    const updatedPreviews = imagePreviews.filter((_, i) => i !== index);
+    const updatedFiles = [...imageFiles];
+    const updatedPreviews = [...imagePreviews];
+    updatedFiles[index] = null;
+    updatedPreviews[index] = null;
 
-    setImageFiles(updatedImages);
+    setImageFiles(updatedFiles);
     setImagePreviews(updatedPreviews);
   };
 
@@ -75,8 +79,11 @@ const AddItem = () => {
     newFormData.append('category', formData.category);
     newFormData.append('details', JSON.stringify(formData.details));
 
+    // Append images only if they exist
     imageFiles.forEach((file) => {
-      newFormData.append('images', file);
+      if (file) {
+        newFormData.append('images', file);
+      }
     });
 
     try {
@@ -152,30 +159,39 @@ const AddItem = () => {
         fullWidth
       />
 
-      <Button
-        variant="contained"
-        component="label"
-        startIcon={<PhotoCamera />}
-        sx={{ marginTop: 2 }}
-      >
+      <Typography variant="h6" component="h4" gutterBottom>
         Upload Images (Max 5)
-        <input type="file" multiple accept="image/*" hidden onChange={handleImageChange} />
-      </Button>
+      </Typography>
 
-      <Stack direction="row" spacing={2} sx={{ marginTop: 2 }}>
+      <Grid container spacing={2}>
         {imagePreviews.map((src, index) => (
-          <Box key={index} sx={{ position: 'relative' }}>
-            <img src={src} alt={`preview-${index}`} style={{ width: 100, height: 100, borderRadius: 8 }} />
-            <IconButton
-              onClick={() => handleImageRemove(index)}
-              size="small"
-              sx={{ position: 'absolute', top: 0, right: 0, backgroundColor: 'rgba(0, 0, 0, 0.5)', color: 'white' }}
-            >
-              <Delete fontSize="small" />
-            </IconButton>
-          </Box>
+          <Grid item xs={6} key={index}>
+            <Box sx={{ position: 'relative', textAlign: 'center' }}>
+              <img
+                src={src || 'https://via.placeholder.com/100'}
+                alt={`preview-${index}`}
+                style={{ width: 100, height: 100, borderRadius: 8 }}
+              />
+              <IconButton
+                onClick={() => handleImageRemove(index)}
+                size="small"
+                sx={{ position: 'absolute', top: 0, right: 0, backgroundColor: 'rgba(0, 0, 0, 0.5)', color: 'white' }}
+              >
+                <Delete fontSize="small" />
+              </IconButton>
+              <Button
+                variant="contained"
+                component="label"
+                startIcon={<PhotoCamera />}
+                sx={{ marginTop: 1 }}
+              >
+                {src ? 'Replace' : 'Upload'}
+                <input type="file" accept="image/*" hidden onChange={(e) => handleImageChange(e, index)} />
+              </Button>
+            </Box>
+          </Grid>
         ))}
-      </Stack>
+      </Grid>
 
       <TextField
         label="Customize Link"
