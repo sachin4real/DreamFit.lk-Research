@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Checkbox, Grid, Stack } from '@mui/material';
-import { PhotoCamera } from '@mui/icons-material';
-import FormControlLabel from '@mui/material/FormControlLabel';  // Import FormControlLabel for checkboxes
-import CircularProgress from '@mui/material/CircularProgress';  // Loader for better UX
+import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Checkbox, Grid, Stack, IconButton } from '@mui/material';
+import { PhotoCamera, Delete as DeleteIcon } from '@mui/icons-material';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import CircularProgress from '@mui/material/CircularProgress'; // Loader for better UX
 
 const EditProduct = () => {
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [imagePreviews, setImagePreviews] = useState([]);
-  const [newImages, setNewImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState(new Array(5).fill(null)); // To allow up to 5 images
+  const [newImages, setNewImages] = useState(new Array(5).fill(null)); // New images
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -27,7 +27,14 @@ const EditProduct = () => {
 
   const handleEditClick = (product) => {
     setEditingProduct({ ...product, sizeOptions: product.sizeOptions.join(', ') });
-    setImagePreviews(product.images); // Display existing images as previews
+    
+    // Set existing images for the 5 image slots
+    const currentPreviews = new Array(5).fill(null);
+    product.images.forEach((img, index) => {
+      currentPreviews[index] = `${import.meta.env.VITE_API_URL}${img}`;
+    });
+    setImagePreviews(currentPreviews);
+    setNewImages(new Array(5).fill(null)); // Reset new images
   };
 
   const handleDeleteClick = async (id) => {
@@ -41,11 +48,18 @@ const EditProduct = () => {
     }
   };
 
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    const previews = files.map(file => URL.createObjectURL(file));
-    setNewImages(files); // Store new images
-    setImagePreviews([...imagePreviews, ...previews]); // Show new image previews along with old ones
+  const handleImageChange = (e, index) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const newPreviews = [...imagePreviews];
+    newPreviews[index] = URL.createObjectURL(file);
+
+    const updatedNewImages = [...newImages];
+    updatedNewImages[index] = file; // Store new image in corresponding slot
+
+    setImagePreviews(newPreviews);
+    setNewImages(updatedNewImages);
   };
 
   const handleUpdate = async () => {
@@ -62,7 +76,15 @@ const EditProduct = () => {
     updatedFormData.append('category', editingProduct.category);
     updatedFormData.append('details', JSON.stringify(editingProduct.details));
 
-    newImages.forEach(file => updatedFormData.append('images', file));
+    // Append new images or keep the old ones if not changed
+    newImages.forEach((file, index) => {
+      if (file) {
+        updatedFormData.append('images', file); // Append only new images
+      } else if (imagePreviews[index]) {
+        // Keep the current image if it wasn't replaced
+        updatedFormData.append('images', editingProduct.images[index]);
+      }
+    });
 
     setLoading(true);
     try {
@@ -73,6 +95,7 @@ const EditProduct = () => {
       });
       alert('Product updated successfully');
       setEditingProduct(null); // Close edit form
+      setImagePreviews(new Array(5).fill(null)); // Clear image previews after update
       fetchProducts(); // Refresh product list
     } catch (error) {
       console.error('Error updating product:', error);
@@ -116,7 +139,7 @@ const EditProduct = () => {
                 {/* Display First Image */}
                 <TableCell>
                   <img
-                    src={`${import.meta.env.VITE_API_URL}${product.images[0]}`} // Display the first image
+                    src={`${import.meta.env.VITE_API_URL}${product.images[0]}`}
                     alt={product.name}
                     style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8 }}
                   />
@@ -203,23 +226,32 @@ const EditProduct = () => {
               />
             </Grid>
 
-            {/* Image Upload */}
+            {/* Image Upload Section */}
             <Grid item xs={12}>
-              <Button variant="contained" component="label" startIcon={<PhotoCamera />}>
-                Upload Images
-                <input type="file" multiple accept="image/*" hidden onChange={handleImageChange} />
-              </Button>
-            </Grid>
-
-            {/* Image Previews */}
-            <Grid item xs={12}>
+              <Typography variant="h6">Images (Upload up to 5 images)</Typography>
               <Stack direction="row" spacing={2}>
                 {imagePreviews.map((src, index) => (
-                  <img key={index} src={src} alt={`preview-${index}`} style={{ width: 100, height: 100, borderRadius: 8 }} />
+                  <Box key={index} sx={{ position: 'relative' }}>
+                    <img
+                      src={src ? src : 'https://via.placeholder.com/100'} // Placeholder if no image is uploaded
+                      alt={`preview-${index}`}
+                      style={{ width: 100, height: 100, borderRadius: 8, objectFit: 'cover' }}
+                    />
+                    <Button
+                      variant="contained"
+                      component="label"
+                      startIcon={<PhotoCamera />}
+                      sx={{ position: 'absolute', bottom: 0, left: 0 }}
+                    >
+                      Upload
+                      <input type="file" accept="image/*" hidden onChange={(e) => handleImageChange(e, index)} />
+                    </Button>
+                  </Box>
                 ))}
               </Stack>
             </Grid>
 
+            {/* Product Details */}
             <Grid item xs={12} sm={6}>
               <TextField
                 label="Material"
