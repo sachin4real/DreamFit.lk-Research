@@ -14,6 +14,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import cors from 'cors';
+import supportRoutes from './routes/support.route.js'
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use('/delivery', deliveryRoutes);
 app.use('/card', cardRoutes);
 
 app.use('/api/products', clothesProductRoutes);
+app.use('/api/support', supportRoutes); // Support routes
 
 
 app.listen(3000,()=> {
