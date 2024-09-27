@@ -28,12 +28,13 @@ const products = [
       care: 'Normal Wash',
       note: 'Product colour may slightly vary due to photographic lighting sources or your monitor settings.'
     }
+       
   },
   {
     id: 2,
     name: 'Denim Shirt',
     price: 5990,
-    sku: 'PDX5000N-32',
+    sku: 'PDX5000N-33',
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
     images: [
       '/public/ItemPics/denim03.jpg',
@@ -64,7 +65,7 @@ const products = [
     id: 3,
     name: 'T-Shirt',
     price: 5990,
-    sku: 'PDX5000N-32',
+    sku: 'HD5000N-25',
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
     images: [
       '/public/ItemPics/SliitShirt2.jpg',
@@ -95,7 +96,7 @@ const products = [
     id: 4,
     name: 'Green Dress',
     price: 5990,
-    sku: 'PDX5000N-32',
+    sku: 'PDX5000N-35',
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
     images: [
       '/public/ItemPics/GreenDress.jpg',
@@ -126,7 +127,7 @@ const products = [
     id: 5,
     name: 'Party Dress',
     price: 5990,
-    sku: 'PDX5000N-32',
+    sku: 'PDX5000N-36',
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
     images: [
       '/public/ItemPics/redDress02.jpg',
@@ -157,7 +158,7 @@ const products = [
     id: 6,
     name: 'Belly Button Blouse',
     price: 5990,
-    sku: 'PDX5000N-32',
+    sku: 'PDX5000N-37',
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
     images: [
       '/public/ItemPics/Blouse01.jpg',
@@ -187,7 +188,7 @@ const products = [
     id: 7,
     name: 'White Pant',
     price: 5990,
-    sku: 'PDX5000N-32',
+    sku: 'PDX5000N-38',
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
     images: [
       '/public/ItemPics/Cpant01.jpg',
@@ -217,7 +218,7 @@ const products = [
     id: 8,
     name: 'Cargo Pant',
     price: 5990,
-    sku: 'PDX5000N-32',
+    sku: 'PDX5000N-39',
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
     images: [
       '/public/ItemPics/pant01.jpg',

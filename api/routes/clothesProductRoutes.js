@@ -1,5 +1,5 @@
 import express from 'express';
-import { addProduct, updateProduct, deleteProduct, getAllProducts, getProductById, updateProductById, deleteProductById } from '../controllers/clothesProductController.js';
+import { addProduct, updateProduct, deleteProduct, getAllProducts, getProductById, updateProductById, deleteProductById,addProductReview,getProductByIdWithReviews} from '../controllers/clothesProductController.js';
 import multer from 'multer';
 import path from 'path';
 
@@ -57,5 +57,10 @@ router.delete('/delete/:id', deleteProduct);
 
 // Delete product route
 router.delete('/:id', deleteProductById);
+
+// In your routes file
+router.post('/:sku/review', addProductReview);
+
+router.get('/:id/reviews', getProductByIdWithReviews);
 
 export default router;
