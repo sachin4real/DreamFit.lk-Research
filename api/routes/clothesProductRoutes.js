@@ -61,6 +61,6 @@ router.delete('/:id', deleteProductById);
 // In your routes file
 router.post('/:sku/review', addProductReview);
 
-router.get('/:id/reviews', getProductByIdWithReviews);
+router.get('/:sku/reviews', getProductByIdWithReviews);
 
 export default router;
