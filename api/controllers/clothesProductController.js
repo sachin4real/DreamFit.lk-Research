@@ -201,13 +201,25 @@ export const addProductReview = async (req, res) => {
 
 
 
-
 export const getProductByIdWithReviews = async (req, res) => {
-  const product = await ClothesProduct.findById(req.params.id);
-  
-  if (product) {
-    res.json(product);
-  } else {
-    res.status(404).json({ message: 'Product not found' });
+  try {
+    // Find product by SKU
+    const product = await ClothesProduct.findOne({ sku: req.params.sku });
+
+    // If product exists
+    if (product) {
+      res.status(200).json({
+        name: product.name,
+        rating: product.rating,
+        numReviews: product.numReviews,
+        reviews: product.reviews
+      });
+    } else {
+      res.status(404).json({ message: 'Product not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching product reviews:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
