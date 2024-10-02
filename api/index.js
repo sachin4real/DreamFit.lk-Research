@@ -15,6 +15,7 @@ import { fileURLToPath } from 'url';
 
 import cors from 'cors';
 import supportRoutes from './routes/support.route.js'
+import adminRoutes from './routes/adminRoutes.js';
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use('/card', cardRoutes);
 
 app.use('/api/products', clothesProductRoutes);
 app.use('/api/support', supportRoutes); // Support routes
+app.use('/api/admin', adminRoutes);
 
 
 app.listen(3000,()=> {
