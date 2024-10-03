@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import {  Avatar, Button, Dropdown, Navbar, TextInput  } from 'flowbite-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AiOutlineSearch, AiOutlineShoppingCart } from 'react-icons/ai';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
+import { signoutSuccess } from "../redux/user/userSlice"
 
 export default function Header() {
   const [searchTerm, setSearchTerm] = useState('');
   const [cartCount, setCartCount] = useState(0); // To store cart item count
   const path = useLocation().pathname;
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
 
@@ -32,6 +34,22 @@ export default function Header() {
     event.preventDefault();
     if (searchTerm.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchTerm)}`);
+    }
+  };
+
+  const handleSignout = async () => {
+    try {
+      const res = await fetch("/api/user/signout", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        dispatch(signoutSuccess());
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -89,14 +107,14 @@ export default function Header() {
             }
           >
             <Dropdown.Header>
-              <span className='block text-sm'>@{currentUser.username}</span>
+    
               <span className='block text-sm font-medium truncate'>{currentUser.email}</span>
             </Dropdown.Header>
             <Link to={'/profile'}>
               <Dropdown.Item>Profile</Dropdown.Item>
             </Link>
             <Dropdown.Divider />
-            <Dropdown.Item>Sign out</Dropdown.Item>
+            <Dropdown.Item onClick={handleSignout}>Sign out</Dropdown.Item>
           </Dropdown>
         ) : (
           <Link to='/sign-in'>
