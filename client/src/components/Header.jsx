@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Navbar, TextInput } from 'flowbite-react';
+import {  Avatar, Button, Dropdown, Navbar, TextInput  } from 'flowbite-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AiOutlineSearch, AiOutlineShoppingCart } from 'react-icons/ai';
-import { FaMoon } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
 
 export default function Header() {
   const [searchTerm, setSearchTerm] = useState('');
   const [cartCount, setCartCount] = useState(0); // To store cart item count
   const path = useLocation().pathname;
   const navigate = useNavigate();
+  const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
     // Fetch the cart items to get the count
@@ -59,26 +60,51 @@ export default function Header() {
         <AiOutlineSearch />
       </Button>
       
-      {/* Cart Icon with Badge */}
-      <div className="flex gap-2 md:order-2 items-center">
-      <Link to="/cart">
-          <Button className="relative" color="gray" pill>
-            <AiOutlineShoppingCart size={24} />
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-2 py-1">
-                {cartCount}
-              </span>
-            )}
-          </Button>
-        </Link>
-      </div>
+    
 
       <div className="flex gap-2 md:order-2">
-        <Link to='/sign-in'>
-          <Button gradientDuoTone='greenToBlue' outline>
-            Sign In
-          </Button>
-        </Link>
+        
+        {currentUser && (
+          <div className="flex items-center">
+            {/* Cart Icon with Badge */}
+            <Link to="/cart">
+              <Button className="relative" color="gray" pill>
+                <AiOutlineShoppingCart size={18} />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs font-bold rounded-full px-2 py-1">
+                    {cartCount}
+                  </span>
+                )}
+              </Button>
+            </Link>
+          </div>
+        )}
+      
+      {currentUser ? (
+          <Dropdown
+            arrowIcon={false}
+            inline
+            label={
+              <Avatar alt='user' img={currentUser.profilePicture} rounded />
+            }
+          >
+            <Dropdown.Header>
+              <span className='block text-sm'>@{currentUser.username}</span>
+              <span className='block text-sm font-medium truncate'>{currentUser.email}</span>
+            </Dropdown.Header>
+            <Link to={'/dashboard?tab=profile'}>
+              <Dropdown.Item>Profile</Dropdown.Item>
+            </Link>
+            <Dropdown.Divider />
+            <Dropdown.Item>Sign out</Dropdown.Item>
+          </Dropdown>
+        ) : (
+          <Link to='/sign-in'>
+            <Button gradientDuoTone='purpleToBlue' outline>
+              Sign In
+            </Button>
+          </Link>
+        )}
         <Navbar.Toggle />
       </div>
 
