@@ -1,9 +1,21 @@
 import React from 'react';
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, Divider, Box, Typography, IconButton } from '@mui/material';
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Box,
+  Typography,
+  IconButton,
+} from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import MenuIcon from '@mui/icons-material/Menu';
+import BarChartIcon from '@mui/icons-material/BarChart'; // For Admin Sales Report
+import AssignmentIcon from '@mui/icons-material/Assignment'; // For Admin Tickets
 import { Link } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -77,6 +89,7 @@ const Sidebar = () => {
         <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.1)' }} />
 
         <List sx={{ paddingTop: 2 }}>
+          {/* Existing links */}
           <ListItem
             button
             component={Link}
@@ -86,7 +99,7 @@ const Sidebar = () => {
                 backgroundColor: 'rgba(92, 107, 192, 0.2)',
               },
               transition: 'background-color 0.3s ease',
-              borderRadius: 2, // Rounded list items
+              borderRadius: 2,
               margin: '8px 16px',
             }}
           >
@@ -132,6 +145,45 @@ const Sidebar = () => {
               <EditIcon sx={{ color: '#5c6bc0' }} />
             </ListItemIcon>
             <ListItemText primary="Edit Products" />
+          </ListItem>
+
+          {/* New links */}
+          <ListItem
+            button
+            component={Link}
+            to="/admin/sales-report"
+            sx={{
+              '&:hover': {
+                backgroundColor: 'rgba(92, 107, 192, 0.2)',
+              },
+              transition: 'background-color 0.3s ease',
+              borderRadius: 2,
+              margin: '8px 16px',
+            }}
+          >
+            <ListItemIcon>
+              <BarChartIcon sx={{ color: '#5c6bc0' }} />
+            </ListItemIcon>
+            <ListItemText primary="Sales Report" />
+          </ListItem>
+
+          <ListItem
+            button
+            component={Link}
+            to="/adminticket"
+            sx={{
+              '&:hover': {
+                backgroundColor: 'rgba(92, 107, 192, 0.2)',
+              },
+              transition: 'background-color 0.3s ease',
+              borderRadius: 2,
+              margin: '8px 16px',
+            }}
+          >
+            <ListItemIcon>
+              <AssignmentIcon sx={{ color: '#5c6bc0' }} />
+            </ListItemIcon>
+            <ListItemText primary="Admin Tickets" />
           </ListItem>
         </List>
       </Drawer>

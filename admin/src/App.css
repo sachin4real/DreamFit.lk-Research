@@ -1,6 +1,10 @@
+@import './components/Admin/AddItem.css';
+@import './components/Admin/Sidebar.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 body, html, #root, .App {
     margin: 0;

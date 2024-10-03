@@ -1,4 +1,3 @@
-// components/AdminSalesReport.js
 import React, { useState, useEffect } from 'react';
 
 const AdminSalesReport = () => {
@@ -29,12 +28,35 @@ const AdminSalesReport = () => {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-4">Admin Sales Report</h1>
-      <div className="mb-4">
+    <div className="admin-sales-report">
+      <h1 className="title">Admin Sales Report</h1>
+      <div className="report-details">
         <p>Total Product Count: <strong>{report.totalProductCount}</strong></p>
         <p>Total Sales Amount: <strong>Rs {report.totalSalesAmount}.00</strong></p>
       </div>
+
+      <style>{`
+        .admin-sales-report {
+          max-width: 900px;
+          margin: 0 auto;
+          padding: 24px;
+        }
+
+        .title {
+          font-size: 2rem;
+          font-weight: bold;
+          margin-bottom: 16px;
+        }
+
+        .report-details p {
+          margin-bottom: 16px;
+          font-size: 1rem;
+        }
+
+        .report-details strong {
+          font-weight: bold;
+        }
+      `}</style>
     </div>
   );
 };

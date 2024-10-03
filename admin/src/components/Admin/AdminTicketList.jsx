@@ -44,43 +44,42 @@ const AdminTicketList = () => {
     }
 
     return (
-        <div className="container mx-auto p-6">
-            <h2 className="text-3xl font-bold mb-6 text-center">Admin Support Ticket List</h2>
+        <div className="admin-ticket-list">
+            <h2 className="title">Admin Support Ticket List</h2>
 
-            <table className="min-w-full bg-white border border-gray-300 shadow-md rounded-lg overflow-hidden">
+            <table className="ticket-table">
                 <thead>
                     <tr>
-                        <th className="py-3 px-5 border-b text-left">Name</th>
-                        <th className="py-3 px-5 border-b text-left">Email</th>
-                        <th className="py-3 px-5 border-b text-left">Phone Number</th>
-                        <th className="py-3 px-5 border-b text-left">Subject</th>
-                        <th className="py-3 px-5 border-b text-left">Issue Type</th>
-                        <th className="py-3 px-5 border-b text-left">Description</th>
-                        <th className="py-3 px-5 border-b text-left">Status</th>
-                        <th className="py-3 px-5 border-b text-left">Date</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Subject</th>
+                        <th>Issue Type</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Date</th>
                     </tr>
                 </thead>
                 <tbody>
                     {tickets.map(ticket => (
-                        <tr key={ticket._id} className="hover:bg-gray-50 transition-colors duration-200">
-                            <td className="py-3 px-5 border-b">{ticket.name}</td>
-                            <td className="py-3 px-5 border-b">{ticket.email}</td>
-                            <td className="py-3 px-5 border-b">{ticket.phoneNumber}</td>
-                            <td className="py-3 px-5 border-b">{ticket.subject}</td>
-                            <td className="py-3 px-5 border-b">{ticket.issueType}</td>
-                            <td className="py-3 px-5 border-b">{ticket.description}</td>
-                            <td className="py-3 px-5 border-b">
+                        <tr key={ticket._id}>
+                            <td>{ticket.name}</td>
+                            <td>{ticket.email}</td>
+                            <td>{ticket.phoneNumber}</td>
+                            <td>{ticket.subject}</td>
+                            <td>{ticket.issueType}</td>
+                            <td>{ticket.description}</td>
+                            <td>
                                 <select
                                     value={ticket.status}
                                     onChange={(e) => handleStatusChange(ticket._id, e.target.value)}
-                                    className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
                                     <option value="open">Open</option>
                                     <option value="in progress">In Progress</option>
                                     <option value="closed">Closed</option>
                                 </select>
                             </td>
-                            <td className="py-3 px-5 border-b">{new Date(ticket.createdAt).toLocaleString()}</td>
+                            <td>{new Date(ticket.createdAt).toLocaleString()}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -88,12 +87,78 @@ const AdminTicketList = () => {
 
             {/* Popup Modal */}
             {showPopup && (
-                <div className="fixed inset-0 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-                        <p className="text-xl font-bold text-green-600">Successfully changed status!</p>
+                <div className="popup">
+                    <div className="popup-content">
+                        <p>Successfully changed status!</p>
                     </div>
                 </div>
             )}
+
+            <style>{`
+                .admin-ticket-list {
+                    max-width: 1000px;
+                    margin: 0 auto;
+                    padding: 24px;
+                }
+
+                .title {
+                    font-size: 2rem;
+                    font-weight: bold;
+                    text-align: center;
+                    margin-bottom: 24px;
+                }
+
+                .ticket-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    margin-bottom: 20px;
+                }
+
+                .ticket-table th, .ticket-table td {
+                    padding: 12px 16px;
+                    border: 1px solid #ccc;
+                    text-align: left;
+                }
+
+                .ticket-table tr:hover {
+                    background-color: #f9f9f9;
+                }
+
+                .ticket-table select {
+                    padding: 6px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    outline: none;
+                }
+
+                .popup {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    z-index: 1000;
+                }
+
+                .popup-content {
+                    background-color: white;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    text-align: center;
+                }
+
+                .popup-content p {
+                    font-size: 1.25rem;
+                    font-weight: bold;
+                    color: #38a169;  /* Green color */
+                }
+            `}</style>
         </div>
     );
 };
