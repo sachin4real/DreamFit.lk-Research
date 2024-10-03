@@ -63,7 +63,7 @@ export default function Header() {
     
 
       <div className="flex gap-2 md:order-2">
-        
+
         {currentUser && (
           <div className="flex items-center">
             {/* Cart Icon with Badge */}
@@ -92,7 +92,7 @@ export default function Header() {
               <span className='block text-sm'>@{currentUser.username}</span>
               <span className='block text-sm font-medium truncate'>{currentUser.email}</span>
             </Dropdown.Header>
-            <Link to={'/dashboard?tab=profile'}>
+            <Link to={'/profile'}>
               <Dropdown.Item>Profile</Dropdown.Item>
             </Link>
             <Dropdown.Divider />
@@ -100,7 +100,7 @@ export default function Header() {
           </Dropdown>
         ) : (
           <Link to='/sign-in'>
-            <Button gradientDuoTone='purpleToBlue' outline>
+            <Button gradientDuoTone='greenToBlue' outline>
               Sign In
             </Button>
           </Link>
