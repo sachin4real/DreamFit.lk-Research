@@ -26,7 +26,7 @@
 💻 Project Screenshots
 ![Home Page](https://github.com/sachin4real/DreamFit.lk-Research/blob/sachin4real/Img/home.png?raw=true)
 ![Collection Page](https://github.com/sachin4real/DreamFit.lk-Research/blob/sachin4real/Img/collection.png?raw=true)
-![Customize Page](https://github.com/sachin4real/DreamFit.lk-Research/blob/Sachin/Img/customizepage.png?raw=true)
+![Customize Page](https://github.com/sachin4real/DreamFit.lk-Research/blob/sachin4real/Img/customizepage.png?raw=true)
 
 🛠️ Tech Stack
 
