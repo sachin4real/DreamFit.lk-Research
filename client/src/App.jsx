@@ -50,6 +50,11 @@ function App() {
 
     <Route  element={<PrivateRoute/>}>
       <Route path='/profile' element={<Profile/>}/>
+
+      {/* cart */}
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/checkout" element={<PaymentPage />} />
+      <Route path="/card" element={<Card />} />
     </Route>
    
     <Route path='/denimshirt' element={<DenimShirt/>}/>
@@ -57,10 +62,7 @@ function App() {
     <Route path='/about' element={<About/>}/>
     <Route path='*' element={<ErrorPage/>}/>
 
-    <Route path="/cart" element={<Cart />} />
-    <Route path="/checkout" element={<PaymentPage />} />
-    <Route path="/card" element={<Card />} />
-
+   
     </Routes>
     <Footer/>
     </BrowserRouter>
