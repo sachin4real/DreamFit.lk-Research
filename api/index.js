@@ -2,7 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRoutes from './routes/user.route.js'
-
+import authRoutes from './routes/auth.route.js';
 
 
 import cartRoutes from './routes/Cart_route.js';  
@@ -38,6 +38,7 @@ const __dirname = path.dirname(__filename);
 
 app.use('/uploads', express.static('uploads'));  // Serve images from the 'uploads' folder
 
+app.use('/api/auth',authRoutes);
 
 app.use('/cart', cartRoutes);
 app.use('/delivery', deliveryRoutes);
@@ -51,3 +52,13 @@ app.listen(3000,()=> {
 })
 
 app.use('/api/test',userRoutes);
+
+app.use((err,req,res,next)=>{
+    const statusCode = err.statusCode || 500;
+    const message = err.message || 'Internal Server Error';
+    res.status(statusCode).json({
+        success: false,
+        statusCode,
+        message
+});
+});
