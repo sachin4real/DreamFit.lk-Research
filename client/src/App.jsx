@@ -19,6 +19,7 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import SearchPage from './pages/SearchPage';
 import Profile from './pages/Profile';
+import PrivateRoute from './components/PrivateRoute';
 
 //cart
 import Cart from './pages/Cart/Cart';
@@ -47,7 +48,9 @@ function App() {
     <Route path='/blouse2' element={<Blouse02Page/>}/>
     <Route path='/cottonpant' element={<CottonPantPage/>}/>
 
-    <Route path='/profile' element={<Profile/>}/>
+    <Route  element={<PrivateRoute/>}>
+      <Route path='/profile' element={<Profile/>}/>
+    </Route>
    
     <Route path='/denimshirt' element={<DenimShirt/>}/>
     <Route path='/product/:id' element={<ProductPage/>}/>
