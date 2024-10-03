@@ -40,12 +40,12 @@ export const signin = async(req,res,next)=>{
     try {
         const validUser = await User.findOne({email})
         if(!validUser){
-            next(errorHandler(400,'Invalid email or password'));
+            return next(errorHandler(400,'Invalid email or password'));
         }
         
         const validPassword = bcryptjs.compareSync(password,validUser.password);
         if(!validPassword){
-            next(errorHandler(400,'Invalid email or password'));
+            return next(errorHandler(400,'Invalid email or password'));
         }
 
          //create json web token
