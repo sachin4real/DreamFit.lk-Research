@@ -38,7 +38,7 @@ const __dirname = path.dirname(__filename);
 
 app.use('/uploads', express.static('uploads'));  // Serve images from the 'uploads' folder
 
-app.use('/api/auth',authRoutes);
+app.use('/api/auth',authRoutes); //auth
 
 app.use('/cart', cartRoutes);
 app.use('/delivery', deliveryRoutes);
