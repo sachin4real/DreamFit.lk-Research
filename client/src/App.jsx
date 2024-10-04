@@ -18,6 +18,8 @@ import About from './pages/About';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import SearchPage from './pages/SearchPage';
+import Profile from './pages/Profile';
+import PrivateRoute from './components/PrivateRoute';
 
 //cart
 import Cart from './pages/Cart/Cart';
@@ -45,16 +47,22 @@ function App() {
     <Route path='/lshirt' element={<LadiesShirtPage/>}/>
     <Route path='/blouse2' element={<Blouse02Page/>}/>
     <Route path='/cottonpant' element={<CottonPantPage/>}/>
+
+    <Route  element={<PrivateRoute/>}>
+      <Route path='/profile' element={<Profile/>}/>
+
+      {/* cart */}
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/checkout" element={<PaymentPage />} />
+      <Route path="/card" element={<Card />} />
+    </Route>
    
     <Route path='/denimshirt' element={<DenimShirt/>}/>
     <Route path='/product/:id' element={<ProductPage/>}/>
     <Route path='/about' element={<About/>}/>
     <Route path='*' element={<ErrorPage/>}/>
 
-    <Route path="/cart" element={<Cart />} />
-    <Route path="/checkout" element={<PaymentPage />} />
-    <Route path="/card" element={<Card />} />
-
+   
     </Routes>
     <Footer/>
     </BrowserRouter>
