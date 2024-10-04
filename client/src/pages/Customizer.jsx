@@ -7,6 +7,8 @@ import { EditorTabs, FilterTabs, DecalTypes } from '../config/constants';
 import { fadeAnimation, slideAnimation } from '../config/motion';
 import { AIPicker, FilePicker, Tab } from '../components';
 import { AiFillCamera } from 'react-icons/ai'; 
+import { FiShoppingCart } from "react-icons/fi";
+import {Button, Label,TextInput,Alert,Spinner} from 'flowbite-react';
 
 const Customizer = () => {
   const snap = useSnapshot(state);
@@ -82,6 +84,11 @@ const Customizer = () => {
         .replace("image/png", "image/octet-stream")
     );
     link.click();
+  };
+
+  // Function to handle canvas download
+  const handleAddToCart = () => {
+    console.log("add to cart")
   };
 
 
@@ -177,18 +184,28 @@ const Customizer = () => {
             ))}
           </motion.div>
 
-          {/* Download button */}
+          {/* Download button  and cart button*/}
           <motion.div
             className="absolute z-10 bottom-10 right-10"
             {...fadeAnimation}
           >
-            <button
-              className="share bg-gradient-to-r from-green-300 via-teal-300 to-cyan-400 text-white px-4 py-2 rounded-lg flex items-center"
+
+              <Button
+              gradientDuoTone='greenToBlue'
+              onClick={handleAddToCart}
+            >
+              Add To Cart
+              <FiShoppingCart  size="1.3em" className="ml-2" />
+            </Button>
+
+            <Button
+              gradientDuoTone='greenToBlue'
+              className='mt-2'
               onClick={handleDownload}
             >
               DOWNLOAD
               <AiFillCamera size="1.3em" className="ml-2" />
-            </button>
+            </Button>
           </motion.div>
         </>
       )
