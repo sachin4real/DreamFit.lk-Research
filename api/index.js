@@ -1,8 +1,9 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import userRoutes from './routes/user.route.js'
-import authRoutes from './routes/auth.route.js';
+import userRoutes from './routes/user.route.js' // user 
+import authRoutes from './routes/auth.route.js'; //auth 
+import dalleRoutes from './routes/dalle.routes.js' // dalle ai 
 
 
 import cartRoutes from './routes/Cart_route.js';  
@@ -29,6 +30,7 @@ mongoose.connect(
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(express.json({ limig: "50mb" })) //dalle e limits
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -39,6 +41,7 @@ const __dirname = path.dirname(__filename);
 app.use('/uploads', express.static('uploads'));  // Serve images from the 'uploads' folder
 
 app.use('/api/auth',authRoutes); //auth
+app.use("/api/v1/dalle", dalleRoutes); //dalle route
 
 app.use('/cart', cartRoutes);
 app.use('/delivery', deliveryRoutes);

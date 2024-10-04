@@ -40,16 +40,19 @@ function App() {
     <Route path='/sign-in' element={<SignIn/>}/>
     <Route path='/sign-up' element={<SignUp/>}/>
     <Route path='/collection' element={<Collection/>}/>
-    <Route path='/pant' element={<PantsPage/>}/>
-    <Route path='/dress3' element={<Dress03Page/>}/>
-    <Route path='/shirts' element={<ShirtsPage/>}/>
-    <Route path='/dress' element={<DressPage/>}/>
-    <Route path='/lshirt' element={<LadiesShirtPage/>}/>
-    <Route path='/blouse2' element={<Blouse02Page/>}/>
-    <Route path='/cottonpant' element={<CottonPantPage/>}/>
+
 
     <Route  element={<PrivateRoute/>}>
       <Route path='/profile' element={<Profile/>}/>
+
+      {/* clothes */}
+      <Route path='/pant' element={<PantsPage/>}/>
+      <Route path='/dress3' element={<Dress03Page/>}/>
+      <Route path='/shirts' element={<ShirtsPage/>}/>
+      <Route path='/dress' element={<DressPage/>}/>
+      <Route path='/lshirt' element={<LadiesShirtPage/>}/>
+      <Route path='/blouse2' element={<Blouse02Page/>}/>
+      <Route path='/cottonpant' element={<CottonPantPage/>}/>
 
       {/* cart */}
       <Route path="/cart" element={<Cart />} />

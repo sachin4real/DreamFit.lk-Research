@@ -16,21 +16,27 @@ function DressModel({ color }) {
 
   return (
     <group scale={[0.05, 0.05, 0.05]}>
-      <mesh castShadow geometry={nodes.B_Skrt_Dress_mtl_0.geometry} dispose={null}  material-color={color}>
-        <meshStandardMaterial color={'darkgreen'} />
-      </mesh>
+      <mesh castShadow geometry={nodes.B_Skrt_Dress_mtl_0.geometry} dispose={null}  material-color={color} >
+       {snap.isFullTexture && (
+        <meshStandardMaterial map={fullTexture} />
+      )}
+    </mesh>
       <mesh castShadow geometry={nodes.B_Top_Dress_mtl_0.geometry} dispose={null}>
         <meshStandardMaterial color={'white'} />
       </mesh>
       <mesh castShadow geometry={nodes.Belt_Dress_mtl_0.geometry} dispose={null}>
         <meshStandardMaterial color={'black'} />
       </mesh>
-      <mesh castShadow geometry={nodes.F_F_Skrt_Dress_mtl_0.geometry} dispose={null}  material-color={color}>
-        <meshStandardMaterial color={'darkgreen'} />
-      </mesh>
-      <mesh castShadow geometry={nodes.F_Skrt_Dress_mtl_0.geometry} dispose={null}  material-color={color}>
-        <meshStandardMaterial color={'green'} />
-      </mesh>
+      <mesh castShadow geometry={nodes.F_F_Skrt_Dress_mtl_0.geometry} dispose={null}  material-color={color} >
+       {snap.isFullTexture && (
+        <meshStandardMaterial map={fullTexture} />
+      )}
+    </mesh>
+      <mesh castShadow geometry={nodes.F_Skrt_Dress_mtl_0.geometry} dispose={null}  material-color={color} >
+       {snap.isFullTexture && (
+        <meshStandardMaterial map={fullTexture} />
+      )}
+    </mesh>
       <mesh castShadow geometry={nodes.L_F_Top_Dress_mtl_0.geometry} dispose={null}>
         <meshStandardMaterial color={'white'} />
       </mesh>
