@@ -11,7 +11,7 @@ const products = [
       
     ],
 
-    customizeLink: "/dress",
+    customizeLink: "/lshirt",
     inStock: false,
     viewDetails:'/product/9',
     category: "Women",
