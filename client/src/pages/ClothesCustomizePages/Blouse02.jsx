@@ -4,11 +4,13 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF, Environment, Center } from '@react-three/drei';
 import { useSnapshot } from 'valtio';
 import state from '../../store';
-import Customizer from '../Customizer';
+import Customizer from '../Customizer'; 
+import { useTexture } from '@react-three/drei';
 
 function Blouse02Model({ color }) {
   
   const snap = useSnapshot(state);
+  const fullTexture = useTexture(snap.fullDecal);
 
   const { nodes, materials } = useGLTF('/Models/belly_button.glb');
 
@@ -20,9 +22,11 @@ function Blouse02Model({ color }) {
         material={materials.M_Croptop}
         dispose={null}
         material-color={color} // Apply dynamic color to the material
-      >
-        <meshStandardMaterial color={'lightblue'} />
-      </mesh>
+        >
+        {snap.isFullTexture && (
+         <meshStandardMaterial map={fullTexture} />
+       )}
+     </mesh>
     </group>
   );
 }
@@ -33,10 +37,9 @@ export default function Blouse02Page() {
   return (
     <main className='app transition-all ease-in'>
       <Customizer />
-
-      {/* color picker */}
-      <div className="absolutetop-6 right-0 p-4 z-10 mb-2"> 
-      <div className='bg-slate-100 p-2 rounded-lg shadow-lg text-gray-700 font-semibold text-center'>Color Picker </div>
+{/* color picker */}
+<div className="absolute top-6 right-0 p-4 z-10  mb-2"> 
+        <div className='bg-slate-100 p-2 rounded-lg shadow-lg text-gray-700 font-semibold text-center'>Color Picker </div>
         <RgbaColorPicker
           color={color}
           onChange={setColor} // Update the color state
