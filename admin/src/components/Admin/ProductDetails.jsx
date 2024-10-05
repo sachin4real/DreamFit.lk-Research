@@ -59,6 +59,18 @@ const ProductDetails = () => {
     }
   };
 
+  const handleNextImage = () => {
+    if (selectedImage < product.images.length - 1) {
+      setSelectedImage((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (selectedImage > 0) {
+      setSelectedImage((prev) => prev - 1);
+    }
+  };
+
   return (
     <Box sx={{ padding: 4 }}>
       <Card
