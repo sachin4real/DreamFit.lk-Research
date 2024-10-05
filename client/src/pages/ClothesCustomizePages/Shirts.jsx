@@ -80,7 +80,7 @@ export default function ShirtsPage() {
     className="w-full max-w-full h-full transition-all ease-in"
     >
      {/* <ambientLight intensity={1} /> */}
-     <directionalLight intensity={2} />
+     <directionalLight intensity={1} />
      <Environment preset='city' />
       <Suspense fallback={null}>
      
