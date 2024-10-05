@@ -118,7 +118,7 @@ export default function Home() {
 
       <div className='flex justify-center items-start flex-wrap gap-6 p-6'>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-       {clothes.slice(3,7).map((item) => (
+       {clothes.slice(0,4).map((item) => (
       <ClothesCard key={item.id} item={item} />
        ))}
        </div>

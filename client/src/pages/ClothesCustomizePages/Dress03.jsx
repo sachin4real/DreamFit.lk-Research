@@ -5,6 +5,7 @@ import { useSnapshot } from 'valtio';
 import state from '../../store';
 import Customizer from '../Customizer';
 import { RgbaColorPicker } from 'react-colorful'; 
+import { useTexture } from '@react-three/drei';
 
 function Dress03Model({ color }) {
   const snap = useSnapshot(state);
@@ -14,7 +15,7 @@ function Dress03Model({ color }) {
   // console.log(materials);
 
   
-
+  const fullTexture = useTexture(snap.fullDecal);
   const stateString = JSON.stringify(snap);
 
   return (
@@ -25,11 +26,12 @@ function Dress03Model({ color }) {
     material={materials.Rib_1X1_486gsm_FRONT_2246101}  
     dispose={null}
     material-color={color} // Apply dynamic color to the material
-  >
-     
-  </mesh>
+    >
+    {snap.isFullTexture && (
+     <meshStandardMaterial map={fullTexture} />
+   )}
+ </mesh>
 
- 
   
 </group>
   );
