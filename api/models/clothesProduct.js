@@ -19,7 +19,7 @@ const clothesProductSchema = new mongoose.Schema({
   },
   images: {
     type: [String],
-    required: true,
+    required: false,
   },
   customizeLink: {
     type: String,
