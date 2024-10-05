@@ -1,4 +1,35 @@
 const products = [
+  {
+    id: 9,
+    name: 'ladies shirt',
+    price: 5990,
+    sku: 'PDX5000N-32',
+    sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
+    images: [
+      '/public/ItemPics/lshirt01.png',
+      '/public/ItemPics/lshirt02.png',
+      
+    ],
+
+    customizeLink: "/lshirt",
+    inStock: false,
+    viewDetails:'/product/9',
+    category: "Women",
+
+    details: {
+      chest: '31.5 - 53.9 (XS - XL)',
+      length: '36.5 - 39 (XS - XL)',
+      shoulders: '11.625 - 12.5 (XS - XL)',
+      material: 'Cotton/Polyester',
+      color: 'Navy Blue',
+      fitType: 'Regular Fit',
+      stretch: 'No Stretch',
+      style: 'Zipper/Buckle',
+      modelSize: 'S',
+      care: 'Normal Wash',
+      note: 'Product colour may slightly vary due to photographic lighting sources or your monitor settings.'
+    }
+  },
    {
     id: 1,
     name: 'Pink & White Shirt',
