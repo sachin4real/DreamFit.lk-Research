@@ -9,11 +9,14 @@ import AdminTicketList from '../components/Admin/AdminTicketList';
 import AdminSalesReport from '../components/Admin/AdminSalesReport';
 
 import { Routes, Route, Link } from 'react-router-dom';
+import { Dashboard } from '@mui/icons-material';
+import HomePage from '../components/Admin/homepage';
 
 const AdminPage = () => {
   return (
     <AdminLayout>
       <Routes>
+        <Route path="/" element={<HomePage/>} />
         <Route path="/add" element={<AddItem />} />
         <Route path="/products" element={<AllProducts />} />
         <Route path="/product/:id" element={<ProductDetails />} />

@@ -9,15 +9,48 @@ const reviewSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const clothesProductSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  price: { type: Number, required: true },
-  sku: { type: String, required: true },
-  sizeOptions: { type: [String], required: true },
-  images: { type: [String], required: true },
-  customizeLink: { type: String, required: true },
-  inStock: { type: Boolean, required: true, default: true },
-  viewDetails: { type: String, required: true },
-  category: { type: String, required: true },
+  name: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  sku: {
+    type: String,
+    required: true,
+  },
+  sizeOptions: {
+    type: [String],
+    required: true,
+  },
+  images: {
+    type: [String],
+    required: false,
+  },
+  customizeLink: {
+    type: String,
+    required: false,
+  },
+  inStock: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
+  stockQuantity: {
+    type: Number,
+    required: true,
+    default: 0, // Default value set to 0 if not specified
+  },
+  viewDetails: {
+    type: String,
+    required: false,
+  },
+  category: {
+    type: String,
+    required: true,
+  },
   details: {
     chest: { type: String, required: true },
     length: { type: String, required: true },

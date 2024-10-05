@@ -106,7 +106,7 @@ export default function DenimShirtPage() {
     className="w-full max-w-full h-full transition-all ease-in"
     >
       {/* <ambientLight intensity={1}/> */}
-     <directionalLight intensity={1.5} />
+     <directionalLight intensity={2.5} />
      <Environment preset='city' />
       <Suspense fallback={null}>
    
