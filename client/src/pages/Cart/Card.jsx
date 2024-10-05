@@ -18,6 +18,7 @@ const CardDetails = () => {
     cardholderName: '',
   });
 
+  const [savedCards, setSavedCards] = useState([]);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -37,7 +38,21 @@ const CardDetails = () => {
       }
     };
 
+    const fetchSavedCards = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/card/saved-cards');
+        if (!response.ok) {
+          throw new Error('Failed to fetch saved cards');
+        }
+        const data = await response.json();
+        setSavedCards(data);
+      } catch (error) {
+        console.error('Error fetching saved cards:', error);
+      }
+    };
+
     fetchCartItems();
+    fetchSavedCards();
   }, []);
 
   const handleChange = (e) => {
@@ -51,7 +66,7 @@ const CardDetails = () => {
         ...cardInfo,
         [name]: formattedValue.trim(), // Ensure there is no extra trailing space
       });
-    } 
+    }
     // For expiry date: Add '/' after MM
     else if (name === 'expiryDate') {
       let formattedValue = value.replace(/\D/g, ''); // Remove non-digit characters
@@ -118,8 +133,41 @@ const CardDetails = () => {
     if (!validate()) return;
   
     try {
-      // Make the payment request
-      const paymentResponse = await fetch('http://localhost:3000/card/save', {
+      // Check if card already exists in savedCards
+      const cardExists = savedCards.some(
+        (card) => card.cardNumber === cardInfo.cardNumber.replace(/\s/g, '')
+      );
+  
+      // Save card details if it doesn't already exist
+      if (!cardExists) {
+        const saveCardResponse = await fetch('http://localhost:3000/card/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...cardInfo,
+            cardNumber: cardInfo.cardNumber.replace(/\s/g, ''),
+          }),
+        });
+  
+        if (!saveCardResponse.ok) {
+          Swal.fire({
+            title: 'Card Save Failed',
+            text: 'Unable to save card details. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'Try Again',
+            confirmButtonColor: '#0d9488',
+          });
+          return; // Exit if saving the card fails
+        } else {
+          const savedCardData = await saveCardResponse.json();
+          setSavedCards([...savedCards, savedCardData.card]); // Add new card to saved cards list
+        }
+      }
+  
+      // Now proceed with processing the payment
+      const paymentResponse = await fetch('http://localhost:3000/card/process-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -132,7 +180,7 @@ const CardDetails = () => {
       });
   
       if (paymentResponse.ok) {
-        // If payment is successful, clear the cart
+        // Clear the cart after successful payment
         const clearCartResponse = await fetch('http://localhost:3000/cart/', {
           method: 'DELETE',
         });
@@ -147,14 +195,6 @@ const CardDetails = () => {
           }).then(() => {
             // Redirect to the homepage or another page after clearing the cart
             navigate('/');
-          });
-        } else {
-          Swal.fire({
-            title: 'Order Successful!',
-            text: 'Your order has been placed successfully, but there was an issue clearing your cart.',
-            icon: 'warning',
-            confirmButtonText: 'Continue Shopping',
-            confirmButtonColor: '#0d9488',
           });
         }
       } else {
@@ -178,6 +218,56 @@ const CardDetails = () => {
     }
   };
   
+  const handleSavedCardClick = async (card) => {
+    try {
+      const paymentResponse = await fetch('http://localhost:3000/card/process-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...card,
+          totalAmount,
+        }),
+      });
+  
+      if (paymentResponse.ok) {
+        const clearCartResponse = await fetch('http://localhost:3000/cart/', {
+          method: 'DELETE',
+        });
+  
+        if (clearCartResponse.ok) {
+          Swal.fire({
+            title: 'Order Successful!',
+            text: 'Your order has been placed successfully, and your cart has been cleared.',
+            icon: 'success',
+            confirmButtonText: 'Continue Shopping',
+            confirmButtonColor: '#0d9488',
+          }).then(() => {
+            navigate('/');
+          });
+        }
+      } else {
+        Swal.fire({
+          title: 'Payment Failed',
+          text: 'There was an issue with your payment. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'Try Again',
+          confirmButtonColor: '#0d9488',
+        });
+      }
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      Swal.fire({
+        title: 'Error',
+        text: 'An unexpected error occurred while processing your payment.',
+        icon: 'error',
+        confirmButtonText: 'Try Again',
+        confirmButtonColor: '#0d9488',
+      });
+    }
+  };
+
   const downloadPDF = () => {
     const doc = new jsPDF();
 
@@ -207,7 +297,21 @@ const CardDetails = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Order Summary */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
+            {/* Saved Cards Section */}
+            <h3 className="text-lg font-semibold mb-4">Saved Cards</h3>
+            <div className="space-y-2">
+              {savedCards.map((card, index) => (
+                <button
+                  key={index}
+                  className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm text-left"
+                  onClick={() => handleSavedCardClick(card)}
+                >
+                  {card.cardholderName} - **** **** **** {card.cardNumber.slice(-4)}
+                </button>
+              ))}
+            </div>
+            {/* Existing order summary code here */}
+            <h3 className="text-lg font-semibold mb-4 mt-6">Order Summary</h3>
             <div className="border border-gray-300 rounded-md shadow-sm p-4 bg-gray-50">
               <table className="min-w-full bg-white border border-gray-200 rounded-lg">
                 <thead className="bg-gray-100">
@@ -253,7 +357,6 @@ const CardDetails = () => {
               </button>
             </div>
           </div>
-
           {/* Payment Form */}
           <div>
             <form onSubmit={handleSubmit} className="space-y-4">
