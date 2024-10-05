@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import products from '../data/products';
+import Swal from 'sweetalert2'; 
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -29,14 +30,13 @@ const ProductPage = () => {
       const response = await fetch('http://localhost:3000/cart');
       const cartItems = await response.json();
 
-      // Check if item with the same ID and size exists
       const existingItem = cartItems.find(
         (item) => item.ItemID === cartItem.ItemID && item.Size === cartItem.Size
       );
 
       if (existingItem) {
-        // Update the quantity of the existing item by adding the new quantity
-        const updatedQuantity = existingItem.Quantity + quantity; // Adjust quantity dynamically
+        // Update the quantity of the existing item
+        const updatedQuantity = existingItem.Quantity + quantity;
 
         const updateResponse = await fetch(`http://localhost:3000/cart/${existingItem._id}`, {
           method: 'PATCH',
@@ -49,11 +49,28 @@ const ProductPage = () => {
         });
 
         if (updateResponse.ok) {
-          alert(`${product.name} (${selectedSize}) quantity has been updated in your cart.`);
+          // Show SweetAlert2 Toast for updated quantity
+          Swal.fire({
+            toast: true,
+            position: 'top-right',
+            icon: 'success',
+            title: `${product.name} (${selectedSize}) quantity updated in your cart`,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          });
         } else {
           const error = await updateResponse.json();
           console.error('Error updating quantity:', error);
-          alert('Failed to update item quantity in cart.');
+          Swal.fire({
+            toast: true,
+            position: 'top-right',
+            icon: 'error',
+            title: 'Failed to update item quantity in cart',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          });
         }
       } else {
         // Add new item to cart
@@ -66,16 +83,41 @@ const ProductPage = () => {
         });
 
         if (addResponse.ok) {
-          alert(`${product.name} (${selectedSize}) has been added to your cart.`);
+          // Show SweetAlert2 Toast for adding new item
+          Swal.fire({
+            toast: true,
+            position: 'top-right',
+            icon: 'success',
+            title: `${product.name} (${selectedSize}) added to your cart`,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          });
         } else {
           const error = await addResponse.json();
           console.error('Error adding to cart:', error);
-          alert('Failed to add item to cart.');
+          Swal.fire({
+            toast: true,
+            position: 'top-right',
+            icon: 'error',
+            title: 'Failed to add item to cart',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          });
         }
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('An error occurred while adding the item to the cart.');
+      Swal.fire({
+        toast: true,
+        position: 'top-right',
+        icon: 'error',
+        title: 'An error occurred while adding the item to the cart',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
     }
   };
 
