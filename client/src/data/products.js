@@ -99,8 +99,7 @@ const products = [
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
     images: [
       '/public/ItemPics/SliitShirt2.png',
-      '/public/ItemPics/SliitShirt03.jpg',
-      '/public/ItemPics/SliitShirt2.jpg',
+
     ],
 
     customizeLink: "/shirts",
@@ -124,7 +123,7 @@ const products = [
   },
   {
     id: 4,
-    name: 'Green Dress',
+    name: 'Dress',
     price: 5990,
     sku: 'PDX5000N-32',
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
