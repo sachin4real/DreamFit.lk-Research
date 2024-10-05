@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import products from '../data/products';
+import Swal from 'sweetalert2'; 
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -81,14 +82,13 @@ const ProductPage = () => {
       const response = await fetch('http://localhost:3000/cart');
       const cartItems = await response.json();
 
-      // Check if item with the same ID and size exists
       const existingItem = cartItems.find(
         (item) => item.ItemID === cartItem.ItemID && item.Size === cartItem.Size
       );
 
       if (existingItem) {
-        // Update the quantity of the existing item by adding the new quantity
-        const updatedQuantity = existingItem.Quantity + 1; // Increment by 1 for the same item
+        // Update the quantity of the existing item
+        const updatedQuantity = existingItem.Quantity + quantity;
 
         const updateResponse = await fetch(`http://localhost:3000/cart/${existingItem._id}`, {
           method: 'PATCH',
@@ -101,11 +101,28 @@ const ProductPage = () => {
         });
 
         if (updateResponse.ok) {
-          alert(`${product.name} (${selectedSize}) quantity has been updated in your cart.`);
+          // Show SweetAlert2 Toast for updated quantity
+          Swal.fire({
+            toast: true,
+            position: 'top-right',
+            icon: 'success',
+            title: `${product.name} (${selectedSize}) quantity updated in your cart`,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          });
         } else {
           const error = await updateResponse.json();
           console.error('Error updating quantity:', error);
-          alert('Failed to update item quantity in cart.');
+          Swal.fire({
+            toast: true,
+            position: 'top-right',
+            icon: 'error',
+            title: 'Failed to update item quantity in cart',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          });
         }
       } else {
         // Add new item to cart
@@ -118,16 +135,47 @@ const ProductPage = () => {
         });
 
         if (addResponse.ok) {
-          alert(`${product.name} (${selectedSize}) has been added to your cart.`);
+          // Show SweetAlert2 Toast for adding new item
+          Swal.fire({
+            toast: true,
+            position: 'top-right',
+            icon: 'success',
+            showCancelButton: true,
+          cancelButtonText: 'Dismiss',
+          confirmButtonText: 'Go to Cart',
+            title: `${product.name} (${selectedSize}) added to your cart`,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          });
         } else {
           const error = await addResponse.json();
           console.error('Error adding to cart:', error);
-          alert('Failed to add item to cart.');
+          Swal.fire({
+            toast: true,
+            position: 'top-right',
+            showCancelButton: true,
+          cancelButtonText: 'Dismiss',
+          confirmButtonText: 'Go to Cart',
+            icon: 'error',
+            title: 'Failed to add item to cart',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          });
         }
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('An error occurred while adding the item to the cart.');
+      Swal.fire({
+        toast: true,
+        position: 'top-right',
+        icon: 'error',
+        title: 'An error occurred while adding the item to the cart',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
     }
   };
 
@@ -142,7 +190,9 @@ const ProductPage = () => {
                 src={img}
                 alt={`${product.name} ${index + 1}`}
                 onClick={() => setSelectedImage(img)}
-                className={`w-16 h-20 rounded-lg cursor-pointer border-2 ${selectedImage === img ? 'border-blue-500' : 'border-gray-200'}`}
+                className={`w-16 h-20 rounded-lg cursor-pointer border-2 ${
+                  selectedImage === img ? 'border-blue-500' : 'border-gray-200'
+                }`}
               />
             ))}
           </div>
@@ -160,7 +210,7 @@ const ProductPage = () => {
           <p className="text-2xl text-gray-800 mb-4">Rs {product.price}.00</p>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">Style Size:</label>
-            <select 
+            <select
               className="block w-40 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
               value={selectedSize}
               onChange={(e) => setSelectedSize(e.target.value)}
@@ -174,9 +224,10 @@ const ProductPage = () => {
           </div>
 
           <div className="flex space-x-4 mb-4">
-            <button 
+            <button
               onClick={addToCart}
-              className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">
+              className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white"
+            >
               Add to cart
             </button>
             <button className="px-4 py-2 bg-gray-200 rounded-lg text-gray-800">Add to Wishlist</button>
@@ -184,12 +235,18 @@ const ProductPage = () => {
 
           <div className="flex items-center space-x-2 mb-4">
             <span className="text-sm font-medium text-gray-600">Share:</span>
-            <button className="text-gray-600"><FaFacebook size={20} /></button>
-            <button className="text-gray-600"><FaWhatsapp size={20} /></button>
+            <button className="text-gray-600">
+              <FaFacebook size={20} />
+            </button>
+            <button className="text-gray-600">
+              <FaWhatsapp size={20} />
+            </button>
           </div>
 
           <div className="flex space-x-4 mb-4">
-            <Link to={product.customizeLink} className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">Customize</Link>
+            <Link to={product.customizeLink} className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">
+              Customize
+            </Link>
           </div>
         </div>
       </div>
