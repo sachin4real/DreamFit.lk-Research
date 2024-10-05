@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Checkbox, Grid, Stack, IconButton } from '@mui/material';
-import { PhotoCamera, Delete as DeleteIcon } from '@mui/icons-material';
+import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField, Checkbox, Grid, Stack, CircularProgress } from '@mui/material';
+import { PhotoCamera } from '@mui/icons-material';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import CircularProgress from '@mui/material/CircularProgress'; // Loader for better UX
 
 const EditProduct = () => {
   const [products, setProducts] = useState([]);
@@ -69,10 +68,8 @@ const EditProduct = () => {
     updatedFormData.append('name', editingProduct.name);
     updatedFormData.append('price', editingProduct.price);
     updatedFormData.append('sku', editingProduct.sku);
-    updatedFormData.append('sizeOptions', JSON.stringify(editingProduct.sizeOptions.split(',')));
-    updatedFormData.append('customizeLink', editingProduct.customizeLink);
-    updatedFormData.append('inStock', editingProduct.inStock);
-    updatedFormData.append('viewDetails', editingProduct.viewDetails);
+    updatedFormData.append('sizeOptions', editingProduct.sizeOptions); // Updated to a single value for size
+    updatedFormData.append('stockQuantity', editingProduct.stockQuantity); // Now tracks the number of items in stock
     updatedFormData.append('category', editingProduct.category);
     updatedFormData.append('details', JSON.stringify(editingProduct.details));
 
@@ -215,14 +212,13 @@ const EditProduct = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={editingProduct.inStock}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, inStock: e.target.checked })}
-                  />
-                }
-                label="In Stock"
+              <TextField
+                label="Stock Quantity"
+                name="stockQuantity"
+                type="number"
+                value={editingProduct.stockQuantity}
+                onChange={handleInputChange}
+                fullWidth
               />
             </Grid>
 

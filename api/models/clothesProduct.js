@@ -23,16 +23,21 @@ const clothesProductSchema = new mongoose.Schema({
   },
   customizeLink: {
     type: String,
-    required: true,
+    required: false,
   },
   inStock: {
     type: Boolean,
     required: true,
     default: true,
   },
+  stockQuantity: {
+    type: Number,
+    required: true,
+    default: 0, // Default value set to 0 if not specified
+  },
   viewDetails: {
     type: String,
-    required: true,
+    required: false,
   },
   category: {
     type: String,

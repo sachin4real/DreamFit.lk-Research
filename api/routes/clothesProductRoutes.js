@@ -1,5 +1,5 @@
 import express from 'express';
-import { addProduct, updateProduct, deleteProduct, getAllProducts, getProductById, updateProductById, deleteProductById } from '../controllers/clothesProductController.js';
+import { addProduct, updateProduct, deleteProduct, getAllProducts, getProductById, updateProductById, deleteProductById, generateStockReport, getInventoryReport } from '../controllers/clothesProductController.js';
 import multer from 'multer';
 import path from 'path';
 
@@ -57,5 +57,8 @@ router.delete('/delete/:id', deleteProduct);
 
 // Delete product route
 router.delete('/:id', deleteProductById);
+
+// Route to generate and download inventory report
+router.get('/report', getInventoryReport);
 
 export default router;

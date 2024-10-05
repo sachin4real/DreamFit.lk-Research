@@ -32,6 +32,18 @@ const ProductDetails = () => {
     setSelectedImage(index);
   };
 
+  const handleNextImage = () => {
+    if (selectedImage < product.images.length - 1) {
+      setSelectedImage((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (selectedImage > 0) {
+      setSelectedImage((prev) => prev - 1);
+    }
+  };
+
   return (
     <Box sx={{ padding: 4 }}>
       <Card sx={{ boxShadow: 4, borderRadius: 3, overflow: 'hidden' }}>
@@ -55,6 +67,9 @@ const ProductDetails = () => {
                   marginTop: 2,
                 }}
               >
+                <IconButton onClick={handlePrevImage} disabled={selectedImage === 0}>
+                  <ArrowBackIcon />
+                </IconButton>
                 {product.images.map((img, index) => (
                   <img
                     key={index}
@@ -71,6 +86,9 @@ const ProductDetails = () => {
                     }}
                   />
                 ))}
+                <IconButton onClick={handleNextImage} disabled={selectedImage === product.images.length - 1}>
+                  <ArrowForwardIcon />
+                </IconButton>
               </Box>
             </Box>
           </Grid>
@@ -95,7 +113,7 @@ const ProductDetails = () => {
               </Typography>
 
               <Typography variant="body1" color="textSecondary" sx={{ marginBottom: 1 }}>
-                In Stock: {product.inStock ? 'Yes' : 'No'}
+                In Stock: {product.stockQuantity > 0 ? `Yes, ${product.stockQuantity} available` : 'No'}
               </Typography>
 
               <Divider sx={{ marginY: 3 }} />
