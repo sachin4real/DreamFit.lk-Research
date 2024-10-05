@@ -15,32 +15,53 @@ import {
   Divider,
   IconButton,
   Chip,
+  Badge,
+  CircularProgress,
+  Modal,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Rating,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
 
 const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [rating, setRating] = useState(4.5); // For demonstration
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/products/${id}`);
         setProduct(response.data);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching product details:', error);
+        setLoading(false);
       }
     };
 
     fetchProduct();
   }, [id]);
 
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   if (!product) {
-    return <Typography>Loading...</Typography>;
+    return <Typography>Product not found.</Typography>;
   }
 
   const handleImageChange = (index) => {
@@ -59,40 +80,51 @@ const ProductDetails = () => {
     }
   };
 
-  const handleNextImage = () => {
-    if (selectedImage < product.images.length - 1) {
-      setSelectedImage((prev) => prev + 1);
-    }
-  };
-
-  const handlePrevImage = () => {
-    if (selectedImage > 0) {
-      setSelectedImage((prev) => prev - 1);
-    }
-  };
+  const handleOpenImageModal = () => setImageModalOpen(true);
+  const handleCloseImageModal = () => setImageModalOpen(false);
 
   return (
-    <Box sx={{ padding: 4 }}>
+    <Box sx={{ padding: 4, background: 'linear-gradient(135deg, #f6f7f9, #eaecef)', minHeight: '100vh' }}>
       <Card
         sx={{
-          boxShadow: 6,
+          boxShadow: 8,
           borderRadius: 3,
           overflow: 'hidden',
-          backgroundColor: '#f5f5f5',
+          backgroundColor: '#fff',
           padding: 3,
+          transition: 'transform 0.3s',
+          '&:hover': { transform: 'scale(1.02)' },
         }}
       >
         <Grid container spacing={4}>
           {/* Image Section */}
           <Grid item xs={12} sm={6}>
             <Box sx={{ position: 'relative' }}>
-              <CardMedia
-                component="img"
-                height="500"
-                image={`${import.meta.env.VITE_API_URL}${product.images[selectedImage]}`}
-                alt={product.name}
-                sx={{ objectFit: 'contain', borderRadius: 2 }}
-              />
+              <Badge
+                badgeContent={product.stockQuantity < 5 ? 'Limited Stock' : product.stockQuantity === 0 ? 'Out of Stock' : 'New'}
+                color={product.stockQuantity === 0 ? 'error' : 'success'}
+                anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                sx={{
+                  top: 16,
+                  left: 16,
+                  padding: '10px',
+                  zIndex: 1,
+                  '& .MuiBadge-badge': {
+                    fontSize: '0.9rem',
+                    padding: '8px',
+                    borderRadius: '10px',
+                  },
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  height="500"
+                  image={`${import.meta.env.VITE_API_URL}${product.images[selectedImage]}`}
+                  alt={product.name}
+                  sx={{ objectFit: 'cover', borderRadius: 2, boxShadow: 4, cursor: 'pointer' }}
+                  onClick={handleOpenImageModal}
+                />
+              </Badge>
               <Box
                 sx={{
                   display: 'flex',
@@ -135,6 +167,32 @@ const ProductDetails = () => {
                 </IconButton>
               </Box>
             </Box>
+
+            {/* Image Modal */}
+            <Modal open={imageModalOpen} onClose={handleCloseImageModal}>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: '80%',
+                  maxWidth: 900,
+                  bgcolor: 'background.paper',
+                  boxShadow: 24,
+                  p: 4,
+                  borderRadius: 3,
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  height="auto"
+                  image={`${import.meta.env.VITE_API_URL}${product.images[selectedImage]}`}
+                  alt={product.name}
+                  sx={{ objectFit: 'cover', width: '100%', borderRadius: 2 }}
+                />
+              </Box>
+            </Modal>
           </Grid>
 
           {/* Product Details Section */}
@@ -164,37 +222,31 @@ const ProductDetails = () => {
 
               <Divider sx={{ marginY: 3 }} />
 
-              {/* Available Sizes Section */}
+              {/* Product Rating */}
               <Typography variant="h6" sx={{ marginBottom: 2 }}>
-                Available Sizes
+                Rating
               </Typography>
-              <Box display="flex" gap={2} flexWrap="wrap">
-                {product.sizeOptions.map((size, index) => (
-                  <Chip
-                    key={index}
-                    label={size}
-                    sx={{
-                      padding: '0.5rem 1rem',
-                      backgroundColor: '#e0e0e0',
-                      fontWeight: 'bold',
-                    }}
-                  />
-                ))}
-              </Box>
+              <Rating value={rating} precision={0.5} readOnly sx={{ marginBottom: 2 }} />
 
               <Divider sx={{ marginY: 3 }} />
 
-              {/* Product Details List */}
+              {/* Available Sizes with Radio Buttons */}
               <Typography variant="h6" sx={{ marginBottom: 2 }}>
-                Product Details
+                Available Sizes
               </Typography>
-              <List>
-                {Object.keys(product.details).map((detailKey, index) => (
-                  <ListItem key={index}>
-                    <ListItemText primary={`${detailKey.charAt(0).toUpperCase() + detailKey.slice(1)}: ${product.details[detailKey]}`} />
-                  </ListItem>
+              <RadioGroup row defaultValue={product.sizeOptions[0]} sx={{ gap: 2 }}>
+                {product.sizeOptions.map((size, index) => (
+                  <FormControlLabel
+                    key={index}
+                    value={size}
+                    control={<Radio color="primary" />}
+                    label={size}
+                    sx={{
+                      '& .MuiFormControlLabel-label': { fontWeight: 'bold' },
+                    }}
+                  />
                 ))}
-              </List>
+              </RadioGroup>
 
               <Divider sx={{ marginY: 3 }} />
 

@@ -1,15 +1,15 @@
 import ClothesProduct from '../models/clothesProduct.js';
 import fs from 'fs';
 import path from 'path';
-const { Parser } = require('json2csv');
 
 export const addProduct = async (req, res) => {
   try {
     const { name, price, sku, sizeOptions, customizeLink, inStock, viewDetails, category, details, stockQuantity } = req.body;
-    const { name, price, sku, sizeOptions, customizeLink, inStock, viewDetails, category, details, stockQuantity } = req.body;
 
     // Check if files are uploaded
     const images = req.files && req.files.length > 0 ? req.files.map(file => `/uploads/${file.filename}`) : [];
+
+    
 
     // Ensure sizeOptions is an array (it might come as a string like "M, L, S")
     const parsedSizeOptions = Array.isArray(sizeOptions) ? sizeOptions : sizeOptions.split(',').map(option => option.trim());
@@ -41,11 +41,12 @@ export const addProduct = async (req, res) => {
   }
 };
 
+
+
 // Edit an existing product
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, sku, sizeOptions, customizeLink, inStock, viewDetails, category, details, stockQuantity } = req.body;
     const { name, price, sku, sizeOptions, customizeLink, inStock, viewDetails, category, details, stockQuantity } = req.body;
 
     const images = req.files.length > 0 
@@ -59,7 +60,6 @@ export const updateProduct = async (req, res) => {
       sizeOptions: JSON.parse(sizeOptions),
       customizeLink,
       inStock: inStock === 'true',
-      stockQuantity: parseInt(stockQuantity, 10), // Updating stockQuantity
       stockQuantity: parseInt(stockQuantity, 10), // Updating stockQuantity
       viewDetails,
       category,
@@ -191,6 +191,8 @@ export const updateProductById = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
 
 
 // Delete a product by ID
