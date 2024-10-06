@@ -1,16 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import products from '../data/products';
 import ClothesCard from '../components/ClothesCard';
+import axios from 'axios';
 
 export default function Collection() {
-  const [clothes, setClothes] = useState(products);
+  const [clothes, setClothes] = useState(products); // Hardcoded clothes
+  const [backendClothes, setBackendClothes] = useState([]); // For fetched backend clothes
   const [filter, setFilter] = useState('All');
+
+  // Fetch clothes from backend when the component mounts
+  useEffect(() => {
+    const fetchBackendClothes = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/api/products/all');  // Replace with your actual API endpoint
+        setBackendClothes(response.data);  // Store fetched clothes from backend
+      } catch (error) {
+        console.error('Error fetching products from backend:', error);
+      }
+    };
+    
+    fetchBackendClothes();
+  }, []);
+
+  // Merge hardcoded clothes and fetched backend clothes
+  const allClothes = [...clothes, ...backendClothes];
 
   const handleFilterChange = (category) => {
     setFilter(category);
   };
 
-  const filteredClothes = filter === 'All' ? clothes : clothes.filter((item) => item.category === filter);
+  const filteredClothes = filter === 'All' ? allClothes : allClothes.filter((item) => item.category === filter);
 
   return (
     <div>
@@ -50,7 +69,7 @@ export default function Collection() {
         {/* Clothes Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {filteredClothes.map((item) => (
-            <ClothesCard key={item.id} item={item} />
+            <ClothesCard key={item.id || item._id} item={item} />
           ))}
         </div>
       </div>

@@ -1,15 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import products from '../data/products';
 import Swal from 'sweetalert2'; 
+import axios from 'axios';
 
 const ProductPage = () => {
-  const { id } = useParams();
-  const product = products.find((product) => product.id === parseInt(id));
-  const [selectedImage, setSelectedImage] = useState(product.images[0]);
-  const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
+  const { id } = useParams();  // Get ID from the URL
+  const [product, setProduct] = useState(null);  // State to hold the product
+  const [selectedImage, setSelectedImage] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    // Check if the ID corresponds to a hardcoded product or a backend product
+    const hardcodedProduct = products.find((product) => product.id === parseInt(id));
+
+    if (hardcodedProduct) {
+      // If it's a hardcoded product, use it
+      setProduct(hardcodedProduct);
+      setSelectedImage(hardcodedProduct.images[0]);
+      setSelectedSize(hardcodedProduct.sizeOptions[0]);
+    } else {
+      // Otherwise, fetch the product from the backend
+      const fetchProduct = async () => {
+        try {
+          const response = await axios.get(`http://localhost:3000/api/products/${id}`);
+          const fetchedProduct = response.data;
+
+          // Fix the image URLs for backend products
+          const imageUrl = fetchedProduct.images[0].includes('/uploads')
+            ? `http://localhost:3000${fetchedProduct.images[0]}`
+            : fetchedProduct.images[0];  // If it's already a full URL, use it as is
+
+          setProduct(fetchedProduct);
+          setSelectedImage(imageUrl);
+          setSelectedSize(fetchedProduct.sizeOptions[0]);
+        } catch (error) {
+          console.error('Error fetching product:', error);
+        }
+      };
+
+      fetchProduct();
+    }
+  }, [id]);
 
   if (!product) {
     return <div>Product not found</div>;
@@ -17,7 +51,7 @@ const ProductPage = () => {
 
   const addToCart = async () => {
     const cartItem = {
-      ItemID: product.id,
+      ItemID: product.id || product._id,
       ItemName: product.name,
       Quantity: quantity,
       ItemPrice: product.price,
@@ -71,6 +105,7 @@ const ProductPage = () => {
             timer: 3000,
             timerProgressBar: true,
           });
+          alert('Failed to update item quantity in cart.');
         }
       } else {
         // Add new item to cart
@@ -111,6 +146,7 @@ const ProductPage = () => {
             timer: 3000,
             timerProgressBar: true,
           });
+          alert('Failed to add item to cart.');
         }
       }
     } catch (error) {
@@ -124,6 +160,7 @@ const ProductPage = () => {
         timer: 3000,
         timerProgressBar: true,
       });
+      alert('An error occurred while adding the item to the cart.');
     }
   };
 
@@ -135,12 +172,10 @@ const ProductPage = () => {
             {product.images.map((img, index) => (
               <img
                 key={index}
-                src={img}
+                src={img.includes('/uploads') ? `http://localhost:3000${img}` : img}  // Construct URL for backend images
                 alt={`${product.name} ${index + 1}`}
-                onClick={() => setSelectedImage(img)}
-                className={`w-16 h-20 rounded-lg cursor-pointer border-2 ${
-                  selectedImage === img ? 'border-blue-500' : 'border-gray-200'
-                }`}
+                onClick={() => setSelectedImage(img.includes('/uploads') ? `http://localhost:3000${img}` : img)}
+                className={`w-16 h-20 rounded-lg cursor-pointer border-2 ${selectedImage === img ? 'border-blue-500' : 'border-gray-200'}`}
               />
             ))}
           </div>
@@ -220,3 +255,4 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
+``
