@@ -270,10 +270,37 @@ const CardDetails = () => {
 
   const downloadPDF = () => {
     const doc = new jsPDF();
-
-    doc.text('Order Summary', 20, 10);
+  
+    // Simulating the text-based logo
+    const logoText = 'DreamFit.LK';
+  
+    // Gradient-like background color
+    const gradientColors = [
+      { color: [34, 197, 94], position: 10 },    // Green
+      { color: [13, 148, 136], position: 25 },   // Teal
+      { color: [6, 182, 212], position: 40 },    // Cyan
+    ];
+  
+    // Loop to simulate a gradient by drawing colored rectangles behind the text
+    gradientColors.forEach(({ color, position }) => {
+      doc.setFillColor(color[0], color[1], color[2]);
+      doc.rect(position, 10, 30, 10, 'F'); // Rectangle behind the text
+    });
+  
+    // Text styling for "DreamFit.LK"
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.setTextColor(255, 255, 255); // White text
+    doc.text(logoText, 15, 18); // x, y position for the text
+  
+    // Title below the logo
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Order Summary', 20, 40); // Position below logo
+  
+    // Add styling for table
     doc.autoTable({
-      startY: 20,
+      startY: 60, // Adjusted for logo
       head: [['Name', 'Qty', 'Price', 'Subtotal']],
       body: cartItems.map(item => [
         item.ItemName,
@@ -281,14 +308,42 @@ const CardDetails = () => {
         `Rs ${item.ItemPrice.toFixed(2)}`,
         `Rs ${(item.ItemPrice * item.Quantity).toFixed(2)}`
       ]),
+      theme: 'grid', // Adding grid lines
+      headStyles: { fillColor: [41, 128, 185] }, // Custom header background color
+      styles: {
+        halign: 'center', // Horizontal alignment of text
+        font: 'helvetica',
+      },
     });
-
-    doc.text(`Subtotal: Rs ${subTotal.toFixed(2)}`, 20, doc.lastAutoTable.finalY + 10);
-    doc.text(`Delivery Fee: Rs ${deliveryFee.toFixed(2)}`, 20, doc.lastAutoTable.finalY + 20);
-    doc.text(`Total: Rs ${totalAmount.toFixed(2)}`, 20, doc.lastAutoTable.finalY + 30);
-
+  
+    // Adding the subtotal, delivery fee, and total amount within the content
+    const finalY = doc.lastAutoTable.finalY + 10; // Getting the final position of the table
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(12);
+    
+    doc.text(`Subtotal: Rs ${subTotal.toFixed(2)}`, 20, finalY);
+    doc.text(`Delivery Fee: Rs ${deliveryFee.toFixed(2)}`, 20, finalY + 10);
+    
+    // Making the total amount bold
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(14);
+    doc.text(`Total: Rs ${totalAmount.toFixed(2)}`, 20, finalY + 20);
+  
+    // Ensure total appears at the bottom of the page
+    const pageHeight = doc.internal.pageSize.height; // Get the height of the page
+    const bottomY = pageHeight - 20; // Leaving some space at the bottom (20 units from the bottom)
+  
+    // Drawing a total box or just the total text at the bottom of the page
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0); // Black text color
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Total Amount Due: Rs ${totalAmount.toFixed(2)}`, 20, bottomY);
+  
+    // Save the PDF
     doc.save('order-summary.pdf');
   };
+  
+  
 
   return (
     <div className="container mx-auto p-6" style={{ marginBottom: '50px' }}>
