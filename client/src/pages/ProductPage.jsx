@@ -71,8 +71,6 @@ const ProductPage = () => {
       if (existingItem) {
         // Update the quantity of the existing item
         const updatedQuantity = existingItem.Quantity + quantity;
-        // Update the quantity of the existing item by adding the new quantity
-        const updatedQuantity = existingItem.Quantity + quantity;
 
         const updateResponse = await fetch(`http://localhost:3000/cart/${existingItem._id}`, {
           method: 'PATCH',
@@ -176,10 +174,6 @@ const ProductPage = () => {
                 key={index}
                 src={img.includes('/uploads') ? `http://localhost:3000${img}` : img}  // Construct URL for backend images
                 alt={`${product.name} ${index + 1}`}
-                onClick={() => setSelectedImage(img)}
-                className={`w-16 h-20 rounded-lg cursor-pointer border-2 ${
-                  selectedImage === img ? 'border-blue-500' : 'border-gray-200'
-                }`}
                 onClick={() => setSelectedImage(img.includes('/uploads') ? `http://localhost:3000${img}` : img)}
                 className={`w-16 h-20 rounded-lg cursor-pointer border-2 ${selectedImage === img ? 'border-blue-500' : 'border-gray-200'}`}
               />
