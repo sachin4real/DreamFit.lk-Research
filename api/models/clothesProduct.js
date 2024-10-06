@@ -1,5 +1,13 @@
 import mongoose from 'mongoose';
 
+const reviewSchema = new mongoose.Schema({
+
+ 
+  name: { type: String, required: true },
+  rating: { type: Number, required: true },
+  comment: { type: String, required: true },
+}, { timestamps: true });
+
 const clothesProductSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -56,8 +64,10 @@ const clothesProductSchema = new mongoose.Schema({
     care: { type: String, required: true },
     note: { type: String },
   },
+  rating: { type: Number, default: 0 },
+  numReviews: { type: Number, default: 0 },
+  reviews: [reviewSchema], // New field for reviews
 }, { timestamps: true });
 
 const ClothesProduct = mongoose.model('ClothesProduct', clothesProductSchema);
-
 export default ClothesProduct;

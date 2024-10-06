@@ -1,22 +1,30 @@
+@import './components/Admin/AddItem.css';
+@import './components/Admin/Sidebar.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
 body, html, #root, .App {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
     background-color: #f4f4f4;
     height: 100vh;
-  }
-  
-  img {
+}
+
+img {
     border-radius: 10px;
     object-fit: cover;
-  }
-  
-  .product-card {
+}
+
+.product-card {
     border-radius: 10px;
     transition: transform 0.3s;
-  }
-  
-  .product-card:hover {
+}
+
+.product-card:hover {
     transform: scale(1.02);
-  }
-  
+}

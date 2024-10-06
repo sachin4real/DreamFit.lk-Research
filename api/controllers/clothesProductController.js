@@ -1,6 +1,8 @@
 import ClothesProduct from '../models/clothesProduct.js';
 import fs from 'fs';
 import path from 'path';
+import mongoose from 'mongoose';
+
 
 export const addProduct = async (req, res) => {
   try {
@@ -235,6 +237,63 @@ export const getInventoryReport = async (req, res) => {
     });
   } catch (error) {
     console.error('Error generating inventory report:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+//product review adding
+export const addProductReview = async (req, res) => {
+  console.log('pppppp');
+  const { rating, comment } = req.body;
+
+  try {
+    console.log('qqqqq');
+    // Make sure you're looking for the product using the `sku`
+    const product = await ClothesProduct.findOne({ sku: req.params.sku });
+     console.info('product is found', product)
+    if (product) {
+  
+      const review = {
+        name: 'Default User', // Static since no authentication is used
+        rating: Number(rating),
+        comment,
+      };
+
+      product.reviews.push(review);
+      product.numReviews = product.reviews.length;
+      product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length;
+
+      await product.save();
+      res.status(201).json({ message: 'Review added', reviews: product.reviews });
+    } else {
+      res.status(404).json({ message: 'Product not found' });
+    }
+  } catch (error) {
+    console.error('Error submitting review:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+
+export const getProductByIdWithReviews = async (req, res) => {
+  try {
+    // Find product by SKU
+    const product = await ClothesProduct.findOne({ sku: req.params.sku });
+
+    // If product exists
+    if (product) {
+      res.status(200).json({
+        name: product.name,
+        rating: product.rating,
+        numReviews: product.numReviews,
+        reviews: product.reviews
+      });
+    } else {
+      res.status(404).json({ message: 'Product not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching product reviews:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };

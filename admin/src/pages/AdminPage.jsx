@@ -5,6 +5,8 @@ import AllProducts from '../components/Admin/AllProducts';
 import ProductDetails from '../components/Admin/ProductDetails';
 
 import EditProduct from '../components/Admin/EditProduct';
+import AdminTicketList from '../components/Admin/AdminTicketList';
+import AdminSalesReport from '../components/Admin/AdminSalesReport';
 
 import { Routes, Route, Link } from 'react-router-dom';
 import { Dashboard } from '@mui/icons-material';
@@ -19,6 +21,8 @@ const AdminPage = () => {
         <Route path="/products" element={<AllProducts />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/edit-products" element={<EditProduct />} />
+        <Route path="/adminticket" element={<AdminTicketList/>}/>
+        <Route path="/admin/sales-report" element={<AdminSalesReport />} />
       </Routes>
     </AdminLayout>
   );

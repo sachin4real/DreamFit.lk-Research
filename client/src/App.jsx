@@ -21,10 +21,16 @@ import SearchPage from './pages/SearchPage';
 import Profile from './pages/Profile';
 import PrivateRoute from './components/PrivateRoute';
 
+
 //cart
 import Cart from './pages/Cart/Cart';
 import PaymentPage from './pages/Cart/PaymentPage';
 import Card from './pages/Cart/Card';
+
+
+//Support ticketform  page  and list page
+import SupportForm from './pages/CustomerSupport/SupportForm';
+import SupportList from './pages/CustomerSupport/SupportList';
 
 
 function App() {
@@ -64,8 +70,9 @@ function App() {
     <Route path='/product/:id' element={<ProductPage/>}/>
     <Route path='/about' element={<About/>}/>
     <Route path='*' element={<ErrorPage/>}/>
+    <Route path='supportform'  element={<SupportForm/>}/>
+    <Route path='supportlist'  element={<SupportList/>}/>
 
-   
     </Routes>
     <Footer/>
     </BrowserRouter>

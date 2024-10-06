@@ -15,6 +15,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import cors from 'cors';
+import supportRoutes from './routes/support.route.js'
+import adminRoutes from './routes/adminRoutes.js';
 
 dotenv.config();
 
@@ -48,7 +50,16 @@ app.use('/delivery', deliveryRoutes);
 app.use('/card', cardRoutes);
 
 app.use('/api/products', clothesProductRoutes);
+app.use('/api/support', supportRoutes); // Support routes
+app.use('/api/admin', adminRoutes);
 
+// CORS Middleware
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
 
 app.listen(3000,()=> {
     console.log('Server is running on port 3000!!')

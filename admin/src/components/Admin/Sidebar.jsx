@@ -213,6 +213,54 @@ const Sidebar = () => {
               {!isCollapsed && <ListItemText primary="Edit Products" />}
             </ListItem>
           </Tooltip>
+            <Tooltip title={!isCollapsed ? '' : 'Admin ticket'} placement="right">
+            <ListItem
+              button
+              component={Link}
+              to="/adminticket"
+              selected={location.pathname === '/adminticket'}
+              sx={{
+                '&:hover': {
+                  backgroundColor: 'rgba(92, 107, 192, 0.2)',
+                },
+                transition: 'background-color 0.3s ease',
+                borderRadius: 2,
+                margin: '8px 16px',
+                justifyContent: isCollapsed ? 'center' : 'initial',
+                paddingLeft: isCollapsed ? '12px' : '24px',
+              }}
+            >  
+            <ListItemIcon>
+                <EditIcon sx={{ color: location.pathname === '/adminticket' ? darkTheme.palette.primary.main : '#5c6bc0' }} />
+              </ListItemIcon>
+              {!isCollapsed && <ListItemText primary="Admin ticket" />}
+            </ListItem>
+          </Tooltip>
+
+          <Tooltip title={!isCollapsed ? '' : 'Admin sales Report'} placement="right">
+            <ListItem
+              button
+              component={Link}
+              to="/admin/sales-report"
+              selected={location.pathname === '/admin/sales-report'}
+              sx={{
+                '&:hover': {
+                  backgroundColor: 'rgba(92, 107, 192, 0.2)',
+                },
+                transition: 'background-color 0.3s ease',
+                borderRadius: 2,
+                margin: '8px 16px',
+                justifyContent: isCollapsed ? 'center' : 'initial',
+                paddingLeft: isCollapsed ? '12px' : '24px',
+              }}
+            >  
+            <ListItemIcon>
+                <EditIcon sx={{ color: location.pathname === '/admin/sales-report' ? darkTheme.palette.primary.main : '#5c6bc0' }} />
+              </ListItemIcon>
+              {!isCollapsed && <ListItemText primary="Admin sales report" />}
+            </ListItem>
+          </Tooltip>
+              
         </List>
       </Drawer>
     </ThemeProvider>

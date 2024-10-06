@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import products from '../data/products';
@@ -11,9 +11,61 @@ const ProductPage = () => {
   const [selectedSize, setSelectedSize] = useState(product.sizeOptions[0]);
   const [quantity, setQuantity] = useState(1);
 
+  // State for reviews
+  const [reviews, setReviews] = useState([]);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+
   if (!product) {
     return <div>Product not found</div>;
   }
+
+  // Fetch existing reviews for the product
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch(`http://localhost:3000/reviews?productId=${product.id}`);
+        const data = await response.json();
+        setReviews(data); // Set the reviews when the product page loads
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      }
+    };
+    fetchReviews();
+  }, [product.id]);
+
+  const submitReview = async (e) => {
+    e.preventDefault();
+
+    const newReview = {
+      rating: Number(rating),
+      comment,
+    };
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/products/${product.sku}/review`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newReview),
+      });
+
+      if (response.ok) {
+        const updatedReviews = await response.json();
+        setReviews(updatedReviews.reviews);
+        setRating(0);
+        setComment('');
+        alert('Review submitted successfully!');
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to submit review: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      alert('An error occurred while submitting your review.');
+    }
+  };
 
   const addToCart = async () => {
     const cartItem = {
@@ -214,6 +266,59 @@ const ProductPage = () => {
           <p><strong>Wash & Care:</strong> {product.details.care}</p>
           <p className="text-xs text-gray-500 mt-2"><em>Note: {product.details.note}</em></p>
         </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="mt-16 ml-10">
+        <h2 className="text-xl font-semibold mb-2">Reviews</h2>
+        <form onSubmit={submitReview} className="flex flex-col space-y-2 mb-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Rating:</label>
+            <select
+              value={rating}
+              onChange={(e) => setRating(Number(e.target.value))}
+              className="block w-40 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+              required
+            >
+              <option value={0}>Select Rating</option>
+              <option value={1}>1 Star</option>
+              <option value={2}>2 Stars</option>
+              <option value={3}>3 Stars</option>
+              <option value={4}>4 Stars</option>
+              <option value={5}>5 Stars</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Comment:</label>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className="block w-full border-gray-300 rounded-md p-2"
+              rows={3}
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white"
+          >
+            Submit Review
+          </button>
+        </form>
+
+        {/* Display Reviews */}
+        {reviews.length === 0 ? (
+           <p>No reviews yet.</p>
+        ) : (
+          <div>
+            {reviews.map((review, index) => (
+              <div key={index} className="border-b py-2">
+                <p className="font-bold">{review.rating} Stars</p>
+                <p>{review.comment}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
