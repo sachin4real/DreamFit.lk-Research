@@ -10,9 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.2",
+    "@mui/material": "^6.1.2",
     "@react-three/drei": "^9.109.2",
     "@react-three/fiber": "^8.16.8",
     "@reduxjs/toolkit": "^2.2.7",
+    "axios": "^1.7.7",
     "firebase": "^10.14.0",
     "flowbite": "^2.5.1",
     "flowbite-react": "^0.10.1",
