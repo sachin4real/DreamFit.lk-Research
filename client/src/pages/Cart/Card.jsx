@@ -18,6 +18,9 @@ const CardDetails = () => {
     cardholderName: '',
   });
 
+  const [savedCards, setSavedCards] = useState([]);
+  const [errors, setErrors] = useState({});
+
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
@@ -35,53 +38,165 @@ const CardDetails = () => {
       }
     };
 
+    const fetchSavedCards = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/card/saved-cards');
+        if (!response.ok) {
+          throw new Error('Failed to fetch saved cards');
+        }
+        const data = await response.json();
+        setSavedCards(data);
+      } catch (error) {
+        console.error('Error fetching saved cards:', error);
+      }
+    };
+
     fetchCartItems();
+    fetchSavedCards();
   }, []);
 
   const handleChange = (e) => {
-    setCardInfo({
-      ...cardInfo,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    // For card number: Format with a space after every 4 digits
+    if (name === 'cardNumber') {
+      let formattedValue = value.replace(/\D/g, ''); // Remove non-digit characters
+      formattedValue = formattedValue.replace(/(\d{4})(?=\d)/g, '$1 '); // Add space after every 4 digits
+      setCardInfo({
+        ...cardInfo,
+        [name]: formattedValue.trim(), // Ensure there is no extra trailing space
+      });
+    }
+    // For expiry date: Add '/' after MM
+    else if (name === 'expiryDate') {
+      let formattedValue = value.replace(/\D/g, ''); // Remove non-digit characters
+      if (formattedValue.length > 2) {
+        formattedValue = `${formattedValue.slice(0, 2)}/${formattedValue.slice(2, 4)}`;
+      }
+      setCardInfo({
+        ...cardInfo,
+        [name]: formattedValue,
+      });
+    } else {
+      setCardInfo({
+        ...cardInfo,
+        [name]: value,
+      });
+    }
+  };
+
+  const validate = () => {
+    let isValid = true;
+    const newErrors = {};
+
+    // Card number validation
+    if (!/^\d{16}$/.test(cardInfo.cardNumber.replace(/\s/g, ''))) { // Validate without spaces
+      newErrors.cardNumber = 'Card number must be 16 digits';
+      isValid = false;
+    }
+
+    // Expiry date validation (MM/YY)
+    const currentYear = new Date().getFullYear().toString().slice(2); // Get last 2 digits of current year
+    const currentMonth = new Date().getMonth() + 1; // Months are 0-indexed, so add 1
+
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardInfo.expiryDate)) {
+      newErrors.expiryDate = 'Expiry date must be in MM/YY format';
+      isValid = false;
+    } else {
+      const [expMonth, expYear] = cardInfo.expiryDate.split('/');
+      if (parseInt(expYear) < parseInt(currentYear) || (parseInt(expYear) === parseInt(currentYear) && parseInt(expMonth) < currentMonth)) {
+        newErrors.expiryDate = 'Card has expired';
+        isValid = false;
+      }
+    }
+
+    // CVC validation (3 digits, 4 for American Express)
+    if (!/^\d{3,4}$/.test(cardInfo.cvc)) {
+      newErrors.cvc = 'CVC must be 3 or 4 digits';
+      isValid = false;
+    }
+
+    // Cardholder name validation
+    if (cardInfo.cardholderName.trim() === '') {
+      newErrors.cardholderName = 'Cardholder name is required';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
+    // Validate before submitting
+    if (!validate()) return;
+  
     try {
-      const response = await fetch('http://localhost:3000/card/save', {
+      // Check if card already exists in savedCards
+      const cardExists = savedCards.some(
+        (card) => card.cardNumber === cardInfo.cardNumber.replace(/\s/g, '')
+      );
+  
+      // Save card details if it doesn't already exist
+      if (!cardExists) {
+        const saveCardResponse = await fetch('http://localhost:3000/card/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            ...cardInfo,
+            cardNumber: cardInfo.cardNumber.replace(/\s/g, ''),
+          }),
+        });
+  
+        if (!saveCardResponse.ok) {
+          Swal.fire({
+            title: 'Card Save Failed',
+            text: 'Unable to save card details. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'Try Again',
+            confirmButtonColor: '#0d9488',
+          });
+          return; // Exit if saving the card fails
+        } else {
+          const savedCardData = await saveCardResponse.json();
+          setSavedCards([...savedCards, savedCardData.card]); // Add new card to saved cards list
+        }
+      }
+  
+      // Now proceed with processing the payment
+      const paymentResponse = await fetch('http://localhost:3000/card/process-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...cardInfo, totalAmount }),
+        body: JSON.stringify({
+          ...cardInfo,
+          cardNumber: cardInfo.cardNumber.replace(/\s/g, ''), // Remove spaces before sending to the backend
+          totalAmount,
+        }),
       });
-
-      if (response.ok) {
-        Swal.fire({
-          title: 'Order Successful!',
-          text: 'Your order has been placed successfully.',
-          icon: 'success',
-          confirmButtonText: 'Continue Shopping',
-          confirmButtonColor: '#0d9488',
-          customClass: {
-            confirmButton: '',
-          },
-          didRender: () => {
-            const confirmButton = document.querySelector('.swal2-confirm');
-            if (confirmButton) {
-              confirmButton.style.backgroundImage = 'linear-gradient(to right, #10b981, #0d9488, #06b6d4)';
-              confirmButton.style.color = '#fff';
-              confirmButton.style.fontWeight = 'bold';
-              confirmButton.style.borderRadius = '0.375rem';
-              confirmButton.style.boxShadow = '0 10px 15px -3px rgba(0, 191, 255, 0.5), 0 4px 6px -2px rgba(0, 191, 255, 0.5)';
-              confirmButton.style.padding = '0.5rem 1rem';
-              confirmButton.style.transition = 'all 0.3s ease-in-out';
-            }
-          }
-        }).then(() => {
-          navigate('/');
+  
+      if (paymentResponse.ok) {
+        // Clear the cart after successful payment
+        const clearCartResponse = await fetch('http://localhost:3000/cart/', {
+          method: 'DELETE',
         });
+  
+        if (clearCartResponse.ok) {
+          Swal.fire({
+            title: 'Order Successful!',
+            text: 'Your order has been placed successfully, and your cart has been cleared.',
+            icon: 'success',
+            confirmButtonText: 'Continue Shopping',
+            confirmButtonColor: '#0d9488',
+          }).then(() => {
+            // Redirect to the homepage or another page after clearing the cart
+            navigate('/');
+          });
+        }
       } else {
         Swal.fire({
           title: 'Payment Failed',
@@ -89,21 +204,6 @@ const CardDetails = () => {
           icon: 'error',
           confirmButtonText: 'Try Again',
           confirmButtonColor: '#0d9488',
-          customClass: {
-            confirmButton: '',
-          },
-          didRender: () => {
-            const confirmButton = document.querySelector('.swal2-confirm');
-            if (confirmButton) {
-              confirmButton.style.backgroundImage = 'linear-gradient(to right, #10b981, #0d9488, #06b6d4)';
-              confirmButton.style.color = '#fff';
-              confirmButton.style.fontWeight = 'bold';
-              confirmButton.style.borderRadius = '0.375rem';
-              confirmButton.style.boxShadow = '0 10px 15px -3px rgba(0, 191, 255, 0.5), 0 4px 6px -2px rgba(0, 191, 255, 0.5)';
-              confirmButton.style.padding = '0.5rem 1rem';
-              confirmButton.style.transition = 'all 0.3s ease-in-out';
-            }
-          }
         });
       }
     } catch (error) {
@@ -114,21 +214,56 @@ const CardDetails = () => {
         icon: 'error',
         confirmButtonText: 'Try Again',
         confirmButtonColor: '#0d9488',
-        customClass: {
-          confirmButton: '',
+      });
+    }
+  };
+  
+  const handleSavedCardClick = async (card) => {
+    try {
+      const paymentResponse = await fetch('http://localhost:3000/card/process-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        didRender: () => {
-          const confirmButton = document.querySelector('.swal2-confirm');
-          if (confirmButton) {
-            confirmButton.style.backgroundImage = 'linear-gradient(to right, #10b981, #0d9488, #06b6d4)';
-            confirmButton.style.color = '#fff';
-            confirmButton.style.fontWeight = 'bold';
-            confirmButton.style.borderRadius = '0.375rem';
-            confirmButton.style.boxShadow = '0 10px 15px -3px rgba(0, 191, 255, 0.5), 0 4px 6px -2px rgba(0, 191, 255, 0.5)';
-            confirmButton.style.padding = '0.5rem 1rem';
-            confirmButton.style.transition = 'all 0.3s ease-in-out';
-          }
+        body: JSON.stringify({
+          ...card,
+          totalAmount,
+        }),
+      });
+  
+      if (paymentResponse.ok) {
+        const clearCartResponse = await fetch('http://localhost:3000/cart/', {
+          method: 'DELETE',
+        });
+  
+        if (clearCartResponse.ok) {
+          Swal.fire({
+            title: 'Order Successful!',
+            text: 'Your order has been placed successfully, and your cart has been cleared.',
+            icon: 'success',
+            confirmButtonText: 'Continue Shopping',
+            confirmButtonColor: '#0d9488',
+          }).then(() => {
+            navigate('/');
+          });
         }
+      } else {
+        Swal.fire({
+          title: 'Payment Failed',
+          text: 'There was an issue with your payment. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'Try Again',
+          confirmButtonColor: '#0d9488',
+        });
+      }
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      Swal.fire({
+        title: 'Error',
+        text: 'An unexpected error occurred while processing your payment.',
+        icon: 'error',
+        confirmButtonText: 'Try Again',
+        confirmButtonColor: '#0d9488',
       });
     }
   };
@@ -156,13 +291,27 @@ const CardDetails = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="shadow-2xl rounded-lg p-6 bg-white relative before:absolute before:-inset-1 before:bg-gradient-to-r before:from-cyan-500 before:via-teal-500 before:to-green-500 before:blur-xl before:opacity-50 before:rounded-lg before:-z-10">
+    <div className="container mx-auto p-6" style={{ marginBottom: '50px' }}>
+      <div className="shadow-lg rounded-lg p-6 bg-white">
         <h2 className="text-2xl font-bold mb-6 text-center">Payment Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Order Summary */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
+            {/* Saved Cards Section */}
+            <h3 className="text-lg font-semibold mb-4">Saved Cards</h3>
+            <div className="space-y-2">
+              {savedCards.map((card, index) => (
+                <button
+                  key={index}
+                  className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm text-left"
+                  onClick={() => handleSavedCardClick(card)}
+                >
+                  {card.cardholderName} - **** **** **** {card.cardNumber.slice(-4)}
+                </button>
+              ))}
+            </div>
+            {/* Existing order summary code here */}
+            <h3 className="text-lg font-semibold mb-4 mt-6">Order Summary</h3>
             <div className="border border-gray-300 rounded-md shadow-sm p-4 bg-gray-50">
               <table className="min-w-full bg-white border border-gray-200 rounded-lg">
                 <thead className="bg-gray-100">
@@ -199,16 +348,15 @@ const CardDetails = () => {
                 </tfoot>
               </table>
               <button
-                className="mt-4 w-10 h-10 bg-green-500 rounded-full shadow-lg shadow-green-500/50 hover:bg-green-600 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 flex justify-center items-center animate-bounce"
+                className="mt-4 w-10 h-10 bg-green-500 rounded-full shadow-lg hover:bg-green-600 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 flex justify-center items-center"
                 onClick={downloadPDF}
               >
-                <svg className="animate-bounce w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
             </div>
           </div>
-
           {/* Payment Form */}
           <div>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -223,6 +371,7 @@ const CardDetails = () => {
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                   required
                 />
+                {errors.cardNumber && <p className="text-red-500 text-sm">{errors.cardNumber}</p>}
               </div>
               <div className="flex space-x-4">
                 <input
@@ -234,6 +383,7 @@ const CardDetails = () => {
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                   required
                 />
+                {errors.expiryDate && <p className="text-red-500 text-sm">{errors.expiryDate}</p>}
                 <input
                   type="text"
                   name="cvc"
@@ -243,6 +393,7 @@ const CardDetails = () => {
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                   required
                 />
+                {errors.cvc && <p className="text-red-500 text-sm">{errors.cvc}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Cardholder Name</label>
@@ -255,10 +406,11 @@ const CardDetails = () => {
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                   required
                 />
+                {errors.cardholderName && <p className="text-red-500 text-sm">{errors.cardholderName}</p>}
               </div>
               <button
                 type="submit"
-                className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 text-white font-bold rounded-md shadow-lg shadow-cyan-500/50 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-100 duration-300"
+                className="w-full mt-4 px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 text-white font-bold rounded-md shadow-lg transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-100 duration-300"
               >
                 Pay Rs {totalAmount.toFixed(2)}
               </button>

@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 const cardSchema = new mongoose.Schema({
- 
   cardNumber: {
     type: String,
     required: true,
@@ -16,10 +15,6 @@ const cardSchema = new mongoose.Schema({
   },
   cardholderName: {
     type: String,
-    required: true,
-  },
-  totalAmount: {
-    type: Number,
     required: true,
   },
 }, { timestamps: true });
