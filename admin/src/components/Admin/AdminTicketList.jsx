@@ -35,6 +35,18 @@ const AdminTicketList = () => {
         }
     };
 
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`http://localhost:3000/api/support/${id}`);
+            setTickets(tickets.filter(ticket => ticket._id !== id));  // Remove deleted ticket from state
+            setShowPopup(true);  // Show popup for deletion success
+            setTimeout(() => setShowPopup(false), 3000);  // Hide popup after 3 seconds
+        } catch (error) {
+            console.error('Error deleting ticket:', error);
+            setError('Failed to delete ticket.');
+        }
+    };
+
     if (loading) {
         return <p>Loading tickets...</p>;
     }
@@ -58,6 +70,7 @@ const AdminTicketList = () => {
                         <th>Description</th>
                         <th>Status</th>
                         <th>Date</th>
+                        <th>Actions</th>  {/* Add Actions column */}
                     </tr>
                 </thead>
                 <tbody>
@@ -80,6 +93,10 @@ const AdminTicketList = () => {
                                 </select>
                             </td>
                             <td>{new Date(ticket.createdAt).toLocaleString()}</td>
+                            <td>
+                                {/* Add Delete Button */}
+                                <button onClick={() => handleDelete(ticket._id)} className="delete-btn">Delete</button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
@@ -89,7 +106,7 @@ const AdminTicketList = () => {
             {showPopup && (
                 <div className="popup">
                     <div className="popup-content">
-                        <p>Successfully changed status!</p>
+                        <p>Action completed successfully!</p>
                     </div>
                 </div>
             )}
@@ -130,6 +147,19 @@ const AdminTicketList = () => {
                     border: 1px solid #ccc;
                     border-radius: 4px;
                     outline: none;
+                }
+
+                .delete-btn {
+                    background-color: #e53e3e;
+                    color: white;
+                    padding: 8px 12px;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+
+                .delete-btn:hover {
+                    background-color: #c53030;
                 }
 
                 .popup {
