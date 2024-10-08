@@ -250,14 +250,7 @@ const ProductDetails = () => {
 
               <Divider sx={{ marginY: 3 }} />
 
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<ShoppingCartIcon />}
-                sx={{ marginTop: 2, padding: '0.75rem 2rem', fontSize: '1rem', backgroundColor: '#1976d2', '&:hover': { backgroundColor: '#155fa0' } }}
-              >
-                Add to Cart
-              </Button>
+         
 
               <Button
                 variant="outlined"
