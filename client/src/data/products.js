@@ -1,12 +1,43 @@
 const products = [
-   {
-    id: 1,
-    name: 'Pink & White Shirt',
+  {
+    id: 9,
+    name: 'ladies shirt',
     price: 5990,
     sku: 'PDX5000N-32',
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
     images: [
-      '/Public/ItemPics/PinkShirt1.jpg',
+      '/public/ItemPics/lshirt01.png',
+      '/public/ItemPics/lshirt02.png',
+      
+    ],
+
+    customizeLink: "/lshirt",
+    inStock: false,
+    viewDetails:'/product/9',
+    category: "Women",
+
+    details: {
+      chest: '31.5 - 53.9 (XS - XL)',
+      length: '36.5 - 39 (XS - XL)',
+      shoulders: '11.625 - 12.5 (XS - XL)',
+      material: 'Cotton/Polyester',
+      color: 'Navy Blue',
+      fitType: 'Regular Fit',
+      stretch: 'No Stretch',
+      style: 'Zipper/Buckle',
+      modelSize: 'S',
+      care: 'Normal Wash',
+      note: 'Product colour may slightly vary due to photographic lighting sources or your monitor settings.'
+    }
+  },
+   {
+    id: 1,
+    name: 'Blue Shirt',
+    price: 5990,
+    sku: 'PDX5000N-32',
+    sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
+    images: [
+      '/Public/ItemPics/Shirt1.png',
       '/Public/ItemPics/PinkShirt0.jpg',
     ],
 
@@ -36,8 +67,8 @@ const products = [
     sku: 'PDX5000N-32',
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
     images: [
-      '/public/ItemPics/denim03.jpg',
-      '/public/ItemPics/demin02.jpg',
+      '/public/ItemPics/denim02.png',
+      '/public/ItemPics/denim03.png',
       '/public/ItemPics/denimshirt04.jpg',
     ],
 
@@ -67,9 +98,8 @@ const products = [
     sku: 'PDX5000N-32',
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
     images: [
-      '/public/ItemPics/SliitShirt2.jpg',
-      '/public/ItemPics/SliitShirt03.jpg',
-      '/public/ItemPics/SliitShirt2.jpg',
+      '/public/ItemPics/SliitShirt2.png',
+
     ],
 
     customizeLink: "/shirts",
@@ -93,14 +123,13 @@ const products = [
   },
   {
     id: 4,
-    name: 'Green Dress',
+    name: 'Dress',
     price: 5990,
     sku: 'PDX5000N-32',
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
     images: [
-      '/public/ItemPics/GreenDress.jpg',
-      '/public/ItemPics/Dress02.jpg',
-      '/public/ItemPics/Dress03.jpg',
+      '/public/ItemPics/GreenDress.png',
+      '/public/ItemPics/Dress02.png',
     ],
 
     customizeLink: "/dress",
@@ -129,8 +158,8 @@ const products = [
     sku: 'PDX5000N-32',
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
     images: [
-      '/public/ItemPics/redDress02.jpg',
-      '/public/ItemPics/reddress01.jpg',
+      '/public/ItemPics/redDress01.png',
+      '/public/ItemPics/reddress02.png',
       
     ],
 
@@ -160,7 +189,7 @@ const products = [
     sku: 'PDX5000N-32',
     sizeOptions: ['XS', 'S', 'M', 'L', 'XL'],
     images: [
-      '/public/ItemPics/Blouse01.jpg',
+      '/public/ItemPics/Blouse01.png',
       
     ],
 

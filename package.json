@@ -4,7 +4,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-     "dev": "nodemon api/index.js",
+    "dev": "nodemon api/index.js",
     "start": "node api/index.js"
   },
   "keywords": [],
@@ -12,9 +12,19 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@fast-csv/format": "^5.0.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "file-saver": "^2.0.5",
+    "html2canvas": "^1.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "jspdf": "^2.5.2",
     "mongoose": "^8.5.2",
-    "nodemon": "^3.1.4"
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.4",
+    "openai": "^4.67.1",
+    "uuid": "^10.0.0"
   }
 }

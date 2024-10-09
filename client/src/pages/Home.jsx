@@ -63,25 +63,7 @@ export default function Home() {
 
      
 
-        {/* try */}
-        <div>
-        <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
-        Shop Our Latest Collection
-      </h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        {clothesData.map((item) => (
-          <HomeClothesCard key={item.id} item={item} />
-        ))}
-      </div>
-    </div>
-
-      <div className='text-1xl  text-center text-gray-800 mb-8'>
-      <Link to={'/collection'} className='bg-transparent hover:bg-green-300 text-black font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded' >
-          View More
-        </Link>
-      </div>
-        </div>
+       
 
 
       {/* 2d cart */}
@@ -123,6 +105,28 @@ export default function Home() {
        ))}
        </div>
       </div>
+
+
+      {/* latest collection */}
+       {/* try */}
+       <div>
+        <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
+        Shop Our Latest Collection
+      </h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        {clothesData.map((item) => (
+          <HomeClothesCard key={item.id} item={item} />
+        ))}
+      </div>
+    </div>
+
+      <div className='text-1xl  text-center text-gray-800 mb-8'>
+      <Link to={'/collection'} className='bg-transparent hover:bg-green-300 text-black font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded' >
+          View More
+        </Link>
+      </div>
+        </div>
 
       {/* <div className="flex justify-center items-start flex-wrap gap-6 p-6">
       {products_3d.map(product => (
