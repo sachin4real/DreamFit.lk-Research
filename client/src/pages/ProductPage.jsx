@@ -1,168 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import products from '../data/products';
-import Swal from 'sweetalert2'; 
-import axios from 'axios';
+
+
 
 const ProductPage = () => {
-  const { id } = useParams();  // Get ID from the URL
-  const [product, setProduct] = useState(null);  // State to hold the product
-  const [selectedImage, setSelectedImage] = useState('');
-  const [selectedSize, setSelectedSize] = useState('');
-  const [quantity, setQuantity] = useState(1);
-
-  useEffect(() => {
-    // Check if the ID corresponds to a hardcoded product or a backend product
-    const hardcodedProduct = products.find((product) => product.id === parseInt(id));
-
-    if (hardcodedProduct) {
-      // If it's a hardcoded product, use it
-      setProduct(hardcodedProduct);
-      setSelectedImage(hardcodedProduct.images[0]);
-      setSelectedSize(hardcodedProduct.sizeOptions[0]);
-    } else {
-      // Otherwise, fetch the product from the backend
-      const fetchProduct = async () => {
-        try {
-          const response = await axios.get(`http://localhost:3000/api/products/${id}`);
-          const fetchedProduct = response.data;
-
-          // Fix the image URLs for backend products
-          const imageUrl = fetchedProduct.images[0].includes('/uploads')
-            ? `http://localhost:3000${fetchedProduct.images[0]}`
-            : fetchedProduct.images[0];  // If it's already a full URL, use it as is
-
-          setProduct(fetchedProduct);
-          setSelectedImage(imageUrl);
-          setSelectedSize(fetchedProduct.sizeOptions[0]);
-        } catch (error) {
-          console.error('Error fetching product:', error);
-        }
-      };
-
-      fetchProduct();
-    }
-  }, [id]);
+  const { id } = useParams();
+  const product = products.find((product) => product.id === parseInt(id));
+  const [selectedImage, setSelectedImage] = useState(product.images[0]);
 
   if (!product) {
     return <div>Product not found</div>;
   }
-
-  const addToCart = async () => {
-    const cartItem = {
-      ItemID: product.id || product._id,
-      ItemName: product.name,
-      Quantity: quantity,
-      ItemPrice: product.price,
-      imageUrl: selectedImage,
-      Size: selectedSize,
-    };
-
-    try {
-      // Fetch current cart items
-      const response = await fetch('http://localhost:3000/cart');
-      const cartItems = await response.json();
-
-      const existingItem = cartItems.find(
-        (item) => item.ItemID === cartItem.ItemID && item.Size === cartItem.Size
-      );
-
-      if (existingItem) {
-        // Update the quantity of the existing item
-        const updatedQuantity = existingItem.Quantity + quantity;
-
-        const updateResponse = await fetch(`http://localhost:3000/cart/${existingItem._id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            Quantity: updatedQuantity,
-          }),
-        });
-
-        if (updateResponse.ok) {
-          // Show SweetAlert2 Toast for updated quantity
-          Swal.fire({
-            toast: true,
-            position: 'top-right',
-            icon: 'success',
-            title: `${product.name} (${selectedSize}) quantity updated in your cart`,
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-          });
-        } else {
-          const error = await updateResponse.json();
-          console.error('Error updating quantity:', error);
-          Swal.fire({
-            toast: true,
-            position: 'top-right',
-            icon: 'error',
-            title: 'Failed to update item quantity in cart',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-          });
-          alert('Failed to update item quantity in cart.');
-        }
-      } else {
-        // Add new item to cart
-        const addResponse = await fetch('http://localhost:3000/cart', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(cartItem),
-        });
-
-        if (addResponse.ok) {
-          // Show SweetAlert2 Toast for adding new item
-          Swal.fire({
-            toast: true,
-            position: 'top-right',
-            icon: 'success',
-            showCancelButton: true,
-          cancelButtonText: 'Dismiss',
-          confirmButtonText: 'Go to Cart',
-            title: `${product.name} (${selectedSize}) added to your cart`,
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-          });
-        } else {
-          const error = await addResponse.json();
-          console.error('Error adding to cart:', error);
-          Swal.fire({
-            toast: true,
-            position: 'top-right',
-            showCancelButton: true,
-          cancelButtonText: 'Dismiss',
-          confirmButtonText: 'Go to Cart',
-            icon: 'error',
-            title: 'Failed to add item to cart',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-          });
-          alert('Failed to add item to cart.');
-        }
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      Swal.fire({
-        toast: true,
-        position: 'top-right',
-        icon: 'error',
-        title: 'An error occurred while adding the item to the cart',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-      });
-      alert('An error occurred while adding the item to the cart.');
-    }
-  };
 
   return (
     <div className="container mx-auto p-6">
@@ -172,9 +22,9 @@ const ProductPage = () => {
             {product.images.map((img, index) => (
               <img
                 key={index}
-                src={img.includes('/uploads') ? `http://localhost:3000${img}` : img}  // Construct URL for backend images
+                src={img}
                 alt={`${product.name} ${index + 1}`}
-                onClick={() => setSelectedImage(img.includes('/uploads') ? `http://localhost:3000${img}` : img)}
+                onClick={() => setSelectedImage(img)}
                 className={`w-16 h-20 rounded-lg cursor-pointer border-2 ${selectedImage === img ? 'border-blue-500' : 'border-gray-200'}`}
               />
             ))}
@@ -193,11 +43,7 @@ const ProductPage = () => {
           <p className="text-2xl text-gray-800 mb-4">Rs {product.price}.00</p>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">Style Size:</label>
-            <select
-              className="block w-40 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-              value={selectedSize}
-              onChange={(e) => setSelectedSize(e.target.value)}
-            >
+            <select className="block w-40 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
               {product.sizeOptions.map((size) => (
                 <option key={size} value={size}>
                   {size}
@@ -207,34 +53,26 @@ const ProductPage = () => {
           </div>
 
           <div className="flex space-x-4 mb-4">
-            <button
-              onClick={addToCart}
-              className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white"
-            >
-              Add to cart
-            </button>
+            <button className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">Add to cart</button>
             <button className="px-4 py-2 bg-gray-200 rounded-lg text-gray-800">Add to Wishlist</button>
           </div>
 
+          
+
           <div className="flex items-center space-x-2 mb-4">
             <span className="text-sm font-medium text-gray-600">Share:</span>
-            <button className="text-gray-600">
-              <FaFacebook size={20} />
-            </button>
-            <button className="text-gray-600">
-              <FaWhatsapp size={20} />
-            </button>
+            <button className="text-gray-600"><FaFacebook size={20} /></button>
+            <button className="text-gray-600"><FaWhatsapp size={20} /></button>
           </div>
 
           <div className="flex space-x-4 mb-4">
-            <Link to={product.customizeLink} className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">
-              Customize
-            </Link>
+          <Link to={product.customizeLink} className="px-4 py-2 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">Customize</Link>
           </div>
+
         </div>
       </div>
 
-      <div className="mt-16 ml-10">
+      <div className="mt-16 ml-10  ">
         <h2 className="text-xl font-semibold mb-2">Product Information</h2>
         <div className="border-t border-b py-4 text-sm text-gray-700">
           <p><strong>Chest:</strong> {product.details.chest}</p>
@@ -250,9 +88,38 @@ const ProductPage = () => {
           <p className="text-xs text-gray-500 mt-2"><em>Note: {product.details.note}</em></p>
         </div>
       </div>
+
+      <div className="mt-8">
+        <h2 className="text-2xl font-semibold mb-4 text-center">Related Products</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 justify-items-center">
+          {products.slice(1, 5).map((relatedProduct) => (
+            <div key={relatedProduct.id} className="border p-4 rounded-lg max-w-xs">
+              <div className="relative">
+                <img
+                  src={relatedProduct.images[0]}
+                  alt={relatedProduct.name}
+                  className="w-full h-56 object-contain rounded-lg mb-2"
+                />
+               <div>
+               {relatedProduct.inStock 
+                  ?<span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">In stock</span>
+                  :<span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">Out of stock</span>
+                }
+                </div>
+
+                
+              </div>
+              <h3 className="text-lg font-semibold">{relatedProduct.name}</h3>
+              <p className="text-gray-700">Rs {relatedProduct.price}.00</p>
+              <div className="mt-2">
+                <a href={relatedProduct.viewDetails} className="px-2 py-1 bg-gradient-to-r from-green-500 via-teal-500 to-cyan-500 rounded-lg text-white">View Details</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
 
 export default ProductPage;
-``
